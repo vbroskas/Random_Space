@@ -36,3 +36,6 @@
     </ul>
   </article>
 </section>
+
+<h1> from pagecontroller index function! </h1>
+<img src="<%= @url %>">
