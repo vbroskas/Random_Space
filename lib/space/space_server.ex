@@ -1,13 +1,19 @@
 defmodule Space.SpaceServer do
   @name :space_server
   use GenServer
+  alias SpaceWeb.RoomChannel
+  alias SpaceWeb.UserSocket
 
   defmodule State do
     defstruct interval: 0
   end
 
   def start_link(interval \\ 5) do
-    IO.puts("STARTING up space genserver....")
+    # How do I connect to socket and join channel??????? The below doesn't work, but if It did I think I'd need to add those values to the state...
+    # socket = UserSocket.connect(%{}, "/socket", %{})
+    # RoomChannel.join("room:lobby", %{}, socket)
+
+    IO.puts("starting up space genserver....")
     state = %State{interval: interval}
     GenServer.start_link(__MODULE__, state, name: @name)
   end
@@ -26,7 +32,6 @@ defmodule Space.SpaceServer do
   handle the cast to set a new interval
   """
   def handle_cast({:set_interval, time}, state) do
-    IO.puts("Hit handle_cast :set_interval")
     # receive request to set a new interval, and update :interval in our State struct
     new_state = %{state | interval: time}
     {:noreply, new_state}
@@ -38,17 +43,20 @@ defmodule Space.SpaceServer do
   https://hexdocs.pm/elixir/GenServer.html#module-receiving-regular-messages
   """
   def handle_info(:refresh, state) do
-    IO.puts("Processing handle_info :refresh call")
     # we could call get_new_image() either here or in our sched_refresh() call...
-    get_new_image()
+    url = get_new_image()
+    IO.puts("New url is:#{url}")
+    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_msg", %{"msg" => "Hi", "body" => "body"})
+
     sched_refresh(state.interval)
     {:noreply, state}
   end
 
   defp sched_refresh(interval) do
-    IO.puts("In sched ref....interval currently set to: #{interval}(seconds)")
+    # IO.puts("In sched ref....interval currently set to: #{interval}(seconds)")
     # send_after(dest, msg, time, opts \\ [])
     # https://hexdocs.pm/elixir/Process.html#send_after/4
+    IO.puts("hit INIT")
     Process.send_after(self(), :refresh, :timer.seconds(interval))
   end
 
@@ -67,7 +75,5 @@ defmodule Space.SpaceServer do
     url =
       Poison.Parser.parse!(body, %{})
       |> get_in(["url"])
-
-    IO.puts("NEW URL IS>>>>>>>>>>  #{url}")
   end
 end
