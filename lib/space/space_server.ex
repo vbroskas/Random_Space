@@ -1,16 +1,14 @@
 defmodule Space.SpaceServer do
   @name :space_server
   use GenServer
-  alias SpaceWeb.RoomChannel
-  alias SpaceWeb.UserSocket
 
   defmodule State do
-    defstruct interval: 0
+    defstruct interval: 5
   end
 
-  def start_link(interval \\ 5) do
+  def start_link(_) do
     IO.puts("starting up space genserver....")
-    state = %State{interval: interval}
+    state = %State{}
     GenServer.start_link(__MODULE__, state, name: @name)
   end
 
@@ -22,8 +20,7 @@ defmodule Space.SpaceServer do
   def init(state) do
     # on initial page load, generate & send initial image along with starting interval
     get_new_image()
-    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_interval", %{"interval" => state.interval})
-
+    broadcast_interval(state.interval)
     # make call to begin loop
     sched_refresh(state.interval)
     {:ok, state}
@@ -34,8 +31,7 @@ defmodule Space.SpaceServer do
   """
   def handle_cast({:set_interval, interval}, state) do
     new_state = %{state | interval: interval}
-    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_interval", %{"interval" => interval})
-    # on interval change send fresh image
+    broadcast_interval(interval)
     get_new_image()
     {:noreply, new_state}
   end
@@ -57,6 +53,10 @@ defmodule Space.SpaceServer do
     # send_after(dest, msg, time, opts \\ [])
     # https://hexdocs.pm/elixir/Process.html#send_after/4
     Process.send_after(self(), :refresh, :timer.seconds(interval))
+  end
+
+  defp broadcast_interval(interval) do
+    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_interval", %{"interval" => interval})
   end
 
   defp get_new_image do
