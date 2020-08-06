@@ -14,12 +14,17 @@ defmodule Space.SpaceServer do
     GenServer.start_link(__MODULE__, state, name: @name)
   end
 
-  def set_new_interval(time) do
-    GenServer.cast(@name, {:set_interval, time})
+  def set_new_interval(interval) do
+    GenServer.cast(@name, {:set_interval, interval})
   end
 
   # server callback functions--------------------------
   def init(state) do
+    # on initial page load, generate & send initial image along with starting interval
+    get_new_image()
+    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_interval", %{"interval" => state.interval})
+
+    # make call to begin loop
     sched_refresh(state.interval)
     {:ok, state}
   end
@@ -27,9 +32,11 @@ defmodule Space.SpaceServer do
   @doc """
   handle the cast to set a new interval
   """
-  def handle_cast({:set_interval, time}, state) do
-    # receive request to set a new interval, and update :interval in our State struct
-    new_state = %{state | interval: time}
+  def handle_cast({:set_interval, interval}, state) do
+    new_state = %{state | interval: interval}
+    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_interval", %{"interval" => interval})
+    # on interval change send fresh image
+    get_new_image()
     {:noreply, new_state}
   end
 
@@ -40,10 +47,7 @@ defmodule Space.SpaceServer do
   """
   def handle_info(:refresh, state) do
     # we could call get_new_image() either here or in our sched_refresh() call...
-    url = get_new_image()
-    IO.puts("New url is:#{url}")
-    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_msg", %{"msg" => "Hi", "body" => url})
-
+    get_new_image()
     sched_refresh(state.interval)
     {:noreply, state}
   end
@@ -52,7 +56,6 @@ defmodule Space.SpaceServer do
     # IO.puts("In sched ref....interval currently set to: #{interval}(seconds)")
     # send_after(dest, msg, time, opts \\ [])
     # https://hexdocs.pm/elixir/Process.html#send_after/4
-    IO.puts("hit INIT")
     Process.send_after(self(), :refresh, :timer.seconds(interval))
   end
 
@@ -71,5 +74,7 @@ defmodule Space.SpaceServer do
     url =
       Poison.Parser.parse!(body, %{})
       |> get_in(["url"])
+
+    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_url", %{"url" => url})
   end
 end

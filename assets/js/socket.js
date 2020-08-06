@@ -54,7 +54,8 @@ let socket = new Socket("/socket", { params: { token: window.userToken } })
 // Finally, connect to the socket:
 socket.connect()
 
-let messagesContainer = document.querySelector("#url")
+let imgContainer = document.querySelector("#url")
+let intervalContainer = document.querySelector("#interval")
 
 
 // Now that you are connected, you can join channels with a topic:
@@ -63,14 +64,20 @@ channel.join()
 	.receive("ok", resp => { console.log("Joined lobby successfully", resp) })
 	.receive("error", resp => { console.log("Unable to join", resp) })
 
-channel.on("new_msg", payload => {
+channel.on("new_url", payload => {
 	console.log("Got New Msg")
-	messagesContainer.innerHTML = ''
-	let messageItem = document.createElement("img")
-	messageItem.src = payload.body
+	imgContainer.innerHTML = ''
+	let imgItem = document.createElement("img")
+	imgItem.src = payload.url
+	imgItem.classList.add("space-img");
 
-	messagesContainer.appendChild(messageItem)
+	imgContainer.appendChild(imgItem)
 
+})
+
+channel.on("new_interval", payload => {
+	console.log("New Interval Set")
+	intervalContainer.innerHTML = payload.interval
 })
 
 export default socket
