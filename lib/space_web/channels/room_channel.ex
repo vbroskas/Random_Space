@@ -1,5 +1,6 @@
 defmodule SpaceWeb.RoomChannel do
   use Phoenix.Channel
+  # intercept ["new_msg"]
 
   def join("room:lobby", _message, socket) do
     IO.puts("Joined channel....")
@@ -10,8 +11,9 @@ defmodule SpaceWeb.RoomChannel do
     {:error, %{reason: "unauthorized"}}
   end
 
-  def handle_out("new_msg", payload, socket) do
-    IO.puts("hit handle_out...")
-    {:noreply, socket}
-  end
+  # def handle_out("new_msg", payload, socket) do
+  #   # IO.puts("hit handle_out...")
+  #   # IO.inspect(payload, label: "Payload")
+  #   {:noreply, socket}
+  # end
 end

@@ -38,5 +38,5 @@
 </section>
 
 <h1> from pagecontroller index function! </h1>
-<img src="<%= @url %>">
+
 <div id="url"></div>

@@ -9,10 +9,6 @@ defmodule Space.SpaceServer do
   end
 
   def start_link(interval \\ 5) do
-    # How do I connect to socket and join channel??????? The below doesn't work, but if It did I think I'd need to add those values to the state...
-    # socket = UserSocket.connect(%{}, "/socket", %{})
-    # RoomChannel.join("room:lobby", %{}, socket)
-
     IO.puts("starting up space genserver....")
     state = %State{interval: interval}
     GenServer.start_link(__MODULE__, state, name: @name)
@@ -46,7 +42,7 @@ defmodule Space.SpaceServer do
     # we could call get_new_image() either here or in our sched_refresh() call...
     url = get_new_image()
     IO.puts("New url is:#{url}")
-    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_msg", %{"msg" => "Hi", "body" => "body"})
+    SpaceWeb.Endpoint.broadcast!("room:lobby", "new_msg", %{"msg" => "Hi", "body" => url})
 
     sched_refresh(state.interval)
     {:noreply, state}

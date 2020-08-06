@@ -65,8 +65,10 @@ channel.join()
 
 channel.on("new_msg", payload => {
 	console.log("Got New Msg")
-	let messageItem = document.createElement("p")
-	messageItem.innerText = `${payload.body}`
+	messagesContainer.innerHTML = ''
+	let messageItem = document.createElement("img")
+	messageItem.src = payload.body
+
 	messagesContainer.appendChild(messageItem)
 
 })
