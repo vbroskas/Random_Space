@@ -11,9 +11,12 @@ defmodule SpaceWeb.RoomChannel do
     {:error, %{reason: "unauthorized"}}
   end
 
-  # def handle_out("new_msg", payload, socket) do
-  #   # IO.puts("hit handle_out...")
-  #   # IO.inspect(payload, label: "Payload")
-  #   {:noreply, socket}
-  # end
+  def handle_in("change_interval", %{"interval" => interval}, socket) do
+    # send interval change request to genserver
+    interval
+    |> String.to_integer()
+    |> Space.SpaceServer.set_new_interval()
+
+    {:noreply, socket}
+  end
 end

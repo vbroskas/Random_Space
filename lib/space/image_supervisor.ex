@@ -12,7 +12,7 @@ defmodule Space.ImageSupervisor do
     # init is where we tell the Supervisor process what children processes it needs to monitor
     # when a child process is started, it needs to be linked to the supervisor so the supervisor can detect a crash
     # as a default, the supervisor process assumes a child process defines a start_link() function...
-    children = [Space.SpaceServer]
+    children = [Space.SpaceServer, {Phoenix.PubSub, name: :my_pubsub}]
 
     Supervisor.init(children, strategy: :one_for_one)
   end

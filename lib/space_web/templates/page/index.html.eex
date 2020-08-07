@@ -4,11 +4,13 @@
 </section>
 
 <section class="row">
+<input id="interval-input" type="text"></input>
+</section>
 
-<div>
+<div class="row">
 <h4>Interval is:<span id="interval"></span></h4>
 </div>
 
-</section>
+
 <hr>
 <div id="url"></div>

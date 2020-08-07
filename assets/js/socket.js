@@ -56,6 +56,7 @@ socket.connect()
 
 let imgContainer = document.querySelector("#url")
 let intervalContainer = document.querySelector("#interval")
+let intervalInput = document.querySelector("#interval-input")
 
 
 // Now that you are connected, you can join channels with a topic:
@@ -64,8 +65,9 @@ channel.join()
 	.receive("ok", resp => { console.log("Joined lobby successfully", resp) })
 	.receive("error", resp => { console.log("Unable to join", resp) })
 
+// new msg containing image URL
 channel.on("new_url", payload => {
-	console.log("Got New Msg")
+
 	imgContainer.innerHTML = ''
 	let imgItem = document.createElement("img")
 	imgItem.src = payload.url
@@ -75,6 +77,15 @@ channel.on("new_url", payload => {
 
 })
 
+intervalInput.addEventListener("keypress", event => {
+	if (event.key === 'Enter') {
+		console.log("Sending new interval....")
+		channel.push("change_interval", { interval: intervalInput.value })
+		intervalInput.value = ""
+	}
+})
+
+// new msg containing new interval 
 channel.on("new_interval", payload => {
 	console.log("New Interval Set")
 	intervalContainer.innerHTML = payload.interval
