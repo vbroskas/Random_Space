@@ -14,15 +14,16 @@ defmodule Space.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Space.PubSub},
       # Start the Endpoint (http/https)
-      SpaceWeb.Endpoint
+      SpaceWeb.Endpoint,
       # Start a worker by calling: Space.Worker.start_link(arg)
-      # {Space.Worker, arg}
+      Space.ImageSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Space.Supervisor]
     Supervisor.start_link(children, opts)
+    # Space.ImageSupervisor.start_link()
   end
 
   # Tell Phoenix to update the endpoint configuration

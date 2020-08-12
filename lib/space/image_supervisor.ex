@@ -1,7 +1,7 @@
 defmodule Space.ImageSupervisor do
   use Supervisor
 
-  def start_link do
+  def start_link(_args \\ nil) do
     IO.puts("starting Services supervisor...")
     # start_link spawns a supervisor process and LINKS it to the process that calls start_link()
     # start_link(module, init_arg, options \\ [])...__MODULE__ is our callback module
