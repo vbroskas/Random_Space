@@ -1,19 +1,16 @@
 defmodule Space.ImageSupervisor do
-  use Supervisor
+  use DynamicSupervisor
 
-  def start_link(_args \\ nil) do
-    IO.puts("starting Services supervisor...")
-    # start_link spawns a supervisor process and LINKS it to the process that calls start_link()
-    # start_link(module, init_arg, options \\ [])...__MODULE__ is our callback module
-    Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
+  def start_link(arg) do
+    IO.puts("starting Image supervisor...")
+    DynamicSupervisor.start_link(__MODULE__, arg, name: __MODULE__)
   end
 
-  def init(:ok) do
-    # init is where we tell the Supervisor process what children processes it needs to monitor
-    # when a child process is started, it needs to be linked to the supervisor so the supervisor can detect a crash
-    # as a default, the supervisor process assumes a child process defines a start_link() function...
-    children = [Space.SpaceServer, {Phoenix.PubSub, name: :my_pubsub}]
+  def init(_arg) do
+    DynamicSupervisor.init(strategy: :one_for_one)
+  end
 
-    Supervisor.init(children, strategy: :one_for_one)
+  def create_image_server_instance(client_id) do
+    DynamicSupervisor.start_child(__MODULE__, {Space.SpaceServer, client_id})
   end
 end

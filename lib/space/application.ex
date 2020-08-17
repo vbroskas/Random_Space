@@ -16,14 +16,15 @@ defmodule Space.Application do
       # Start the Endpoint (http/https)
       SpaceWeb.Endpoint,
       # Start a worker by calling: Space.Worker.start_link(arg)
+      {Registry, keys: :unique, name: ImageRegistry},
       Space.ImageSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Space.Supervisor]
+
     Supervisor.start_link(children, opts)
-    # Space.ImageSupervisor.start_link()
   end
 
   # Tell Phoenix to update the endpoint configuration

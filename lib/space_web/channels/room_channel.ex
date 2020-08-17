@@ -2,8 +2,8 @@ defmodule SpaceWeb.RoomChannel do
   use Phoenix.Channel
   # intercept ["new_msg"]
 
-  def join("room:lobby", _message, socket) do
-    IO.puts("Joined channel....")
+  def join("room:" <> uuid, _message, socket) do
+    IO.puts("Joined channel....#{uuid}")
     {:ok, socket}
   end
 
@@ -11,12 +11,17 @@ defmodule SpaceWeb.RoomChannel do
     {:error, %{reason: "unauthorized"}}
   end
 
-  def handle_in("change_interval", %{"interval" => interval}, socket) do
+  def handle_in("change_interval", %{"interval" => interval, "client_id" => client_id}, socket) do
     # send interval change request to genserver
-    interval
-    |> String.to_integer()
-    |> Space.SpaceServer.set_new_interval()
+    interval = interval |> String.to_integer()
+    Space.SpaceServer.set_new_interval(interval, client_id)
+    {:noreply, socket}
+  end
 
+  def handle_in("create_server", %{"client_id" => client_id}, socket) do
+    IO.puts("creating server for..#{client_id}")
+    # create genserver instance
+    Space.ImageSupervisor.create_image_server_instance(client_id)
     {:noreply, socket}
   end
 end

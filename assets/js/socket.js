@@ -60,13 +60,20 @@ let intervalInput = document.querySelector("#interval-input")
 
 
 // Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("room:lobby", {})
-channel.join()
-	.receive("ok", resp => { console.log("Joined lobby successfully", resp) })
+let uuid = uuidv4();
+let channel = socket.channel(`room:${uuid}`, { uuid })
+let join_result = channel.join()
+	.receive("ok", resp => { console.log("JOINED", resp) })
 	.receive("error", resp => { console.log("Unable to join", resp) })
+
+if (join_result.channel.state == "joining") {
+	channel.push("create_server", { client_id: uuid })
+}
 
 // new msg containing image URL
 channel.on("new_url", payload => {
+
+	console.log("new URL!")
 
 	imgContainer.innerHTML = ''
 	let imgItem = document.createElement("img")
@@ -80,15 +87,26 @@ channel.on("new_url", payload => {
 intervalInput.addEventListener("keypress", event => {
 	if (event.key === 'Enter') {
 		console.log("Sending new interval....")
-		channel.push("change_interval", { interval: intervalInput.value })
+		channel.push("change_interval", { interval: intervalInput.value, client_id: uuid })
 		intervalInput.value = ""
 	}
 })
 
 // new msg containing new interval 
 channel.on("new_interval", payload => {
-	console.log("New Interval Set")
+	console.log("New Interval Receieved")
 	intervalContainer.innerHTML = payload.interval
 })
 
 export default socket
+
+function create_server() {
+	channel.push("create_server", { client_id: uuid })
+}
+
+
+function uuidv4() {
+	return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+		(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+	);
+}
