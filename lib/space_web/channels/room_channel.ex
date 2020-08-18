@@ -24,4 +24,13 @@ defmodule SpaceWeb.RoomChannel do
     Space.ImageSupervisor.create_image_server_instance(client_id)
     {:noreply, socket}
   end
+
+  @doc """
+  handle the cast to kill process
+  """
+  def handle_in("kill", %{"client_id" => client_id}, socket) do
+    [{pid, _value}] = Registry.lookup(ImageRegistry, "#{client_id}")
+    Process.exit(pid, :kill)
+    {:noreply, socket}
+  end
 end

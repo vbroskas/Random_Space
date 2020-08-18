@@ -11,6 +11,13 @@ defmodule Space.ImageSupervisor do
   end
 
   def create_image_server_instance(client_id) do
+    IO.puts("++++++++++++++++++")
+    # DynamicSupervisor.start_child(__MODULE__, %{
+    #   id: Space.IntervalStash,
+    #   start: {Space.IntervalStash, :start_link, [15, client_id]}
+    # })
+    DynamicSupervisor.start_child(__MODULE__, {Space.IntervalStash, client_id})
+
     DynamicSupervisor.start_child(__MODULE__, {Space.SpaceServer, client_id})
   end
 end

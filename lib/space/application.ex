@@ -18,6 +18,7 @@ defmodule Space.Application do
       # Start a worker by calling: Space.Worker.start_link(arg)
       {Registry, keys: :unique, name: ImageRegistry},
       Space.ImageSupervisor
+      # Space.IntervalStash
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

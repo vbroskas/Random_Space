@@ -57,7 +57,7 @@ socket.connect()
 let imgContainer = document.querySelector("#url")
 let intervalContainer = document.querySelector("#interval")
 let intervalInput = document.querySelector("#interval-input")
-
+let killButton = document.querySelector("#kill")
 
 // Now that you are connected, you can join channels with a topic:
 let uuid = uuidv4();
@@ -84,12 +84,21 @@ channel.on("new_url", payload => {
 
 })
 
+// submit new interval 
 intervalInput.addEventListener("keypress", event => {
 	if (event.key === 'Enter') {
 		console.log("Sending new interval....")
 		channel.push("change_interval", { interval: intervalInput.value, client_id: uuid })
 		intervalInput.value = ""
 	}
+})
+
+// submit new interval 
+killButton.addEventListener("click", event => {
+	console.log("clicked kill")
+	channel.push("kill", { client_id: uuid })
+
+
 })
 
 // new msg containing new interval 
@@ -100,9 +109,9 @@ channel.on("new_interval", payload => {
 
 export default socket
 
-function create_server() {
-	channel.push("create_server", { client_id: uuid })
-}
+// function create_server() {
+// 	channel.push("create_server", { client_id: uuid })
+// }
 
 
 function uuidv4() {
