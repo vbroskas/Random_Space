@@ -17,16 +17,18 @@ defmodule Space.SpaceServer do
 
   def set_new_interval(interval, client_id) do
     GenServer.cast(
-      {:via, Registry, {ImageRegistry, "#{client_id}"}},
+      process_client_id(client_id),
       {:set_interval, interval, client_id}
     )
   end
 
   # server callback functions--------------------------
   def init(client_id) do
-    interval = Space.IntervalStash.get({:via, Registry, {ImageRegistry, "Stash-#{client_id}"}})
+    interval = get_interval_from_stash(client_id)
     state = %State{client_id: client_id}
+    # get first image
     get_new_image(client_id)
+    # send interval to client
     broadcast_interval(interval, client_id)
     # make call to begin loop
     sched_refresh(interval, client_id)
@@ -37,12 +39,13 @@ defmodule Space.SpaceServer do
   handle the cast to set a new interval
   """
   def handle_cast({:set_interval, interval, client_id}, state) do
-    Space.IntervalStash.update({:via, Registry, {ImageRegistry, "Stash-#{client_id}"}}, interval)
+    # set new interval in Agent
+    update_interval_in_stash(client_id, interval)
     # cancel current timer
     Process.cancel_timer(state.timer)
-    # send interval to frontend
+    # send interval to client
     broadcast_interval(interval, state.client_id)
-    # send new img to frontend
+    # send new img to client
     get_new_image(state.client_id)
     # restart loop with new timer
     sched_refresh(interval, client_id)
@@ -58,8 +61,7 @@ defmodule Space.SpaceServer do
   def handle_info(:refresh, state) do
     get_new_image(state.client_id)
 
-    interval =
-      Space.IntervalStash.get({:via, Registry, {ImageRegistry, "Stash-#{state.client_id}"}})
+    interval = get_interval_from_stash(state.client_id)
 
     timer = sched_refresh(interval, state.client_id)
     new_state = %{state | timer: timer}
@@ -78,6 +80,14 @@ defmodule Space.SpaceServer do
       )
 
     timer
+  end
+
+  defp update_interval_in_stash(client_id, interval) do
+    Space.IntervalStash.update({:via, Registry, {ImageRegistry, "Stash-#{client_id}"}}, interval)
+  end
+
+  defp get_interval_from_stash(client_id) do
+    Space.IntervalStash.get({:via, Registry, {ImageRegistry, "Stash-#{client_id}"}})
   end
 
   defp broadcast_interval(interval, client_id) do
