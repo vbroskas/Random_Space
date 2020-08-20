@@ -54,23 +54,34 @@ let socket = new Socket("/socket", { params: { token: window.userToken } })
 // Finally, connect to the socket:
 socket.connect()
 
+// Image channel 
 let imgContainer = document.querySelector("#url")
 let intervalContainer = document.querySelector("#interval")
 let intervalInput = document.querySelector("#interval-input")
 let killButton = document.querySelector("#kill")
 
-// Now that you are connected, you can join channels with a topic:
-let uuid = uuidv4();
-let channel = socket.channel(`room:${uuid}`, { uuid })
+// chat channel 
+let chatInput = document.querySelector("#chat-input")
+let messagesContainer = document.querySelector("#messages")
+
+
+// Join channel for image server:
+let client_id = uuidv4();
+let channel = socket.channel(`room:${client_id}`, { client_id })
+
 let join_result = channel.join()
 	.receive("ok", resp => { console.log("JOINED", resp) })
 	.receive("error", resp => { console.log("Unable to join", resp) })
 
 if (join_result.channel.state == "joining") {
-	channel.push("create_server", { client_id: uuid })
+	// if channel join successful, create unique genserver/Agent instance 
+	channel.push("create_server", { client_id: client_id })
+		.receive("ok", payload => console.log("phoenix replied:", payload))
+	// join chat for default interval
+
 }
 
-// new msg containing image URL
+// Receive new incoming img url message
 channel.on("new_url", payload => {
 
 	console.log("new URL!")
@@ -79,39 +90,95 @@ channel.on("new_url", payload => {
 	let imgItem = document.createElement("img")
 	imgItem.src = payload.url
 	imgItem.classList.add("space-img");
-
 	imgContainer.appendChild(imgItem)
 
 })
 
-// submit new interval 
+// submit new outgoing interval 
 intervalInput.addEventListener("keypress", event => {
 	if (event.key === 'Enter') {
 		console.log("Sending new interval....")
-		channel.push("change_interval", { interval: intervalInput.value, client_id: uuid })
+		channel.push("change_interval", { interval: intervalInput.value, client_id: client_id })
 		intervalInput.value = ""
 	}
+
+
 })
 
-// submit new interval 
+// Kill server process 
 killButton.addEventListener("click", event => {
 	console.log("clicked kill")
-	channel.push("kill", { client_id: uuid })
+	channel.push("kill", { client_id: client_id })
 
 
 })
 
-// new msg containing new interval 
+// new incombing msg containing new interval 
 channel.on("new_interval", payload => {
 	console.log("New Interval Receieved")
 	intervalContainer.innerHTML = payload.interval
+
+	console.log(payload.interval)
+
+	// disconnect from current chat 
+
+	// join new chat 
+	// var chat = socket.channel(`chat:${payload.interval}`)
+	// chat.join()
+	// 	.receive("ok", resp => { console.log("Join chat!", resp) })
+	// 	.receive("error", resp => { console.log("Unable to join chat", resp) })
+
+	// chat.on("new_msg", payload => {
+	// 	let messageItem = document.createElement("p")
+	// 	messageItem.innerText = `[${Date()}] ${payload.body}`
+	// 	messagesContainer.appendChild(messageItem)
+	// })
+
+	// chatInput.addEventListener("keypress", event => {
+	// 	if (event.key === 'Enter') {
+	// 		chat.push("new_msg", { body: chatInput.value })
+	// 		chatInput.value = ""
+	// 	}
+	// 	else if (event.key === '8') {
+	// 		chat.leave().receive("ok", () => alert("left!"))
+	// 		chatInput.value = ""
+	// 	}
+	// })
+
+
+
 })
+
+
+// chat stuff-------
+
+function join_chat(interval) {
+
+	// var chat = socket.channel(`chat:${interval}`, { interval })
+	// chat.join()
+	// 	.receive("ok", resp => { console.log("Join chat!", resp) })
+	// 	.receive("error", resp => { console.log("Unable to join chat", resp) })
+
+	// chat.on("new_msg", payload => {
+	// 	let messageItem = document.createElement("p")
+	// 	messageItem.innerText = `[${Date()}] ${payload.body}`
+	// 	messagesContainer.appendChild(messageItem)
+	// })
+
+	// chatInput.addEventListener("keypress", event => {
+	// 	if (event.key === 'Enter') {
+	// 		chat.push("new_msg", { body: chatInput.value })
+	// 		chatInput.value = ""
+	// 	}
+	// })
+}
+
+
+
 
 export default socket
 
-// function create_server() {
-// 	channel.push("create_server", { client_id: uuid })
-// }
+
 
 
 function uuidv4() {

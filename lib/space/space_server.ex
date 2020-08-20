@@ -22,6 +22,13 @@ defmodule Space.SpaceServer do
     )
   end
 
+  def set_timer(timer, client_id) do
+    GenServer.cast(
+      process_client_id(client_id),
+      {:set_timer, timer}
+    )
+  end
+
   # server callback functions--------------------------
   def init(client_id) do
     interval = get_interval_from_stash(client_id)
@@ -30,13 +37,23 @@ defmodule Space.SpaceServer do
     get_new_image(client_id)
     # send interval to client
     broadcast_interval(interval, client_id)
-    # make call to begin loop
+    # make call to begin timer loop
     sched_refresh(interval, client_id)
+
     {:ok, state}
   end
 
   @doc """
-  handle the cast to set a new interval
+  handle cast to set a new timer
+  """
+  def handle_cast({:set_timer, timer}, state) do
+    # set new timer in state
+    state = %{state | timer: timer}
+    {:noreply, state}
+  end
+
+  @doc """
+  handle cast to set a new interval
   """
   def handle_cast({:set_interval, interval, client_id}, state) do
     # set new interval in Agent
@@ -63,9 +80,9 @@ defmodule Space.SpaceServer do
 
     interval = get_interval_from_stash(state.client_id)
 
-    timer = sched_refresh(interval, state.client_id)
-    new_state = %{state | timer: timer}
-    {:noreply, new_state}
+    sched_refresh(interval, state.client_id)
+
+    {:noreply, state}
   end
 
   defp sched_refresh(interval, client_id) do
@@ -79,7 +96,7 @@ defmodule Space.SpaceServer do
         :timer.seconds(interval)
       )
 
-    timer
+    set_timer(timer, client_id)
   end
 
   defp update_interval_in_stash(client_id, interval) do

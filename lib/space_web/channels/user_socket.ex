@@ -3,6 +3,7 @@ defmodule SpaceWeb.UserSocket do
 
   ## Channels
   channel "room:*", SpaceWeb.RoomChannel
+  channel "chat:*", SpaceWeb.ChatChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

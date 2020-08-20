@@ -2,8 +2,8 @@ defmodule SpaceWeb.RoomChannel do
   use Phoenix.Channel
   # intercept ["new_msg"]
 
-  def join("room:" <> uuid, _message, socket) do
-    IO.puts("Joined channel....#{uuid}")
+  def join("room:" <> client_id, _message, socket) do
+    IO.puts("Joined channel....#{client_id}")
     {:ok, socket}
   end
 
