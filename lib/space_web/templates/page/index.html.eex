@@ -4,7 +4,7 @@
 </section>
 
 <section class="row">
-<input id="interval-input" type="text"></input>
+<input id="interval-input" type="text" placeholder="Enter Interval"></input>
 </section>
 
 <div class="row">
@@ -17,8 +17,10 @@
 <hr>
 <div class="row">
 
-<div class="column" id="url"></div>
-<div id="messages" role="log" aria-live="polite"></div>
-<input id="chat-input" type="text"></input>
+	<div class="column" id="url"></div>
+	<div class="column" id="messages" role="log" aria-live="polite"></div>
+</div>
 
+<div class="row">
+<input id="chat-input" type="text" placeholder="Enter Message Here"></input>
 </div>

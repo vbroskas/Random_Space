@@ -3,7 +3,7 @@ defmodule Space.SpaceServer do
   use GenServer, restart: :transient
 
   defmodule State do
-    defstruct client_id: "", timer: nil
+    defstruct client_id: "", timer: nil, current_chat: nil
   end
 
   def start_link(client_id) do
@@ -32,7 +32,7 @@ defmodule Space.SpaceServer do
   # server callback functions--------------------------
   def init(client_id) do
     interval = get_interval_from_stash(client_id)
-    state = %State{client_id: client_id}
+    state = %State{client_id: client_id, current_chat: interval}
     # get first image
     get_new_image(client_id)
     # send interval to client
@@ -61,7 +61,9 @@ defmodule Space.SpaceServer do
     # cancel current timer
     Process.cancel_timer(state.timer)
     # send interval to client
-    broadcast_interval(interval, state.client_id)
+    broadcast_interval(interval, state.client_id, state)
+    # update chat room in state
+    state = %{state | current_chat: interval}
     # send new img to client
     get_new_image(state.client_id)
     # restart loop with new timer
@@ -107,8 +109,28 @@ defmodule Space.SpaceServer do
     Space.IntervalStash.get({:via, Registry, {ImageRegistry, "Stash-#{client_id}"}})
   end
 
+  defp broadcast_interval(interval, client_id, state) do
+    IO.puts("BROAD 3")
+    # if chat channel stored in state, leave current channel & join channel for new interval
+    # leave curernt channel
+    # SpaceWeb.Endpoint.broadcast!("chat:#{state.current_chat}", "change_chat", %{
+    #   "new_chat" => interval,
+    #   "old_chat" => state.current_chat
+    # })
+
+    SpaceWeb.Endpoint.broadcast!("room:#{client_id}", "new_interval", %{
+      "interval" => interval,
+      "client_id" => client_id
+    })
+  end
+
   defp broadcast_interval(interval, client_id) do
-    SpaceWeb.Endpoint.broadcast!("room:#{client_id}", "new_interval", %{"interval" => interval})
+    IO.puts("BROAD 2")
+
+    SpaceWeb.Endpoint.broadcast!("room:#{client_id}", "new_interval", %{
+      "interval" => interval,
+      "client_id" => client_id
+    })
   end
 
   defp get_new_image(client_id) do

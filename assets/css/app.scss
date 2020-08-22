@@ -31,11 +31,12 @@
 }
 
 .space-img{
-	width: 500px;
+	width: 100%;
 	height: auto;
 }
 
-.messages{
+#messages{
 	overflow: scroll;
-    height: 42rem
+	width: 100%;
+	height: 50rem;
 }
