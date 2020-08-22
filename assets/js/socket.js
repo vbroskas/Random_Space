@@ -117,6 +117,9 @@ channel.on("new_interval", payload => {
 // START chat channel & elements-------------------------
 let chatInput = document.querySelector("#chat-input")
 let messagesContainer = document.querySelector("#messages")
+var chat;
+// join default chat for interval 15
+join_chat(15, client_id)
 
 chatInput.addEventListener("keypress", event => {
 
@@ -128,32 +131,29 @@ chatInput.addEventListener("keypress", event => {
 
 })
 
-// initialize client to join room 15 (default interval)
-let chat = socket.channel("chat:15", { client: client_id })
-chat.join()
-	.receive("ok", resp => { console.log("Joined chat!", resp) })
-	.receive("error", resp => { console.log("Unable to join chat", resp) })
-
-chat.on("new_msg", payload => { new_message(payload) })
-
-
 
 function change_chat(new_room, client_id) {
-
 	// leave chat currently connected to 
 	chat.leave()
+	// clear chat window 
 	messagesContainer.innerHTML = ""
 	// connect to new chat room based on interval 
+	join_chat(new_room, client_id)
+
+}
+
+function join_chat(new_room, client_id) {
 	chat = socket.channel(`chat:${new_room}`, { client: client_id })
 	chat.join()
 		.receive("ok", resp => { console.log("Joined chat!", resp) })
 		.receive("error", resp => { console.log("Unable to join chat", resp) })
 
-	// on new incoming msg 
+	// process new incoming msg 
 	chat.on("new_msg", payload => { new_message(payload) })
 
 
 }
+
 
 // append new incoming chat message to chat window 
 function new_message(payload) {
