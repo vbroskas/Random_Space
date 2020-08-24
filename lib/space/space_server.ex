@@ -89,7 +89,11 @@ defmodule Space.SpaceServer do
 
   defp sched_refresh(interval, client_id) do
     [{pid, _value}] = Registry.lookup(ImageRegistry, "#{client_id}")
-    IO.inspect(pid)
+    # IO.puts("---------")
+    # IO.inspect(pid)
+    # IO.puts(interval)
+    # IO.puts(get_interval_from_stash(client_id))
+    # IO.puts("---------")
 
     timer =
       Process.send_after(

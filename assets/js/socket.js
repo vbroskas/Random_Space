@@ -6,9 +6,16 @@
 //
 // Pass the token on params as below. Or remove it
 // from the params if you are not using authentication.
-import { Socket } from "phoenix"
+import { Socket, Presence } from "phoenix"
 
-let socket = new Socket("/socket", { params: { token: window.userToken } })
+// create mock/fake uuid for client 
+let client_id = uuidv4()
+
+let socket = new Socket("/socket", { params: { client_id: client_id } })
+
+socket.connect()
+
+
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -52,7 +59,7 @@ let socket = new Socket("/socket", { params: { token: window.userToken } })
 //     end
 //
 // Finally, connect to the socket:
-socket.connect()
+
 
 
 // START Image/Interval channel & elements-------------------------
@@ -61,8 +68,8 @@ let intervalContainer = document.querySelector("#interval")
 let intervalInput = document.querySelector("#interval-input")
 let killButton = document.querySelector("#kill")
 
-// create mock/fake uuid for client 
-let client_id = uuidv4()
+
+
 let channel = socket.channel(`room:${client_id}`)
 let channel_join_result = channel.join()
 	.receive("ok", resp => { console.log("JOINED", resp) })
@@ -88,9 +95,11 @@ channel.on("new_url", payload => {
 intervalInput.addEventListener("keypress", event => {
 	if (event.key === 'Enter') {
 		let interval = intervalInput.value
+
 		channel.push("change_interval", { interval: interval, client_id: client_id })
 		intervalInput.value = ""
 		// join new chat room 
+
 		change_chat(interval, client_id)
 	}
 
@@ -104,7 +113,7 @@ killButton.addEventListener("click", event => {
 channel.on("new_interval", payload => {
 	console.log("New Interval Receieved")
 	intervalContainer.innerHTML = payload.interval
-	intervalInput.value = ""
+
 
 
 })
@@ -118,8 +127,8 @@ channel.on("new_interval", payload => {
 let chatInput = document.querySelector("#chat-input")
 let messagesContainer = document.querySelector("#messages")
 var chat;
-// join default chat for interval 15
-join_chat(15, client_id)
+// join default chat for interval 25
+join_chat(25, client_id)
 
 chatInput.addEventListener("keypress", event => {
 
@@ -130,6 +139,21 @@ chatInput.addEventListener("keypress", event => {
 	}
 
 })
+
+
+
+function renderOnlineUsers(presence) {
+	let response = ""
+
+
+	presence.list((id, { metas: [first, ...rest] }) => {
+		id = slice_id(id)
+		// let count = rest.length + 1
+		response += `<br>${id}</br>`
+	})
+
+	document.querySelector("#pres").innerHTML = response
+}
 
 
 function change_chat(new_room, client_id) {
@@ -148,10 +172,40 @@ function join_chat(new_room, client_id) {
 		.receive("ok", resp => { console.log("Joined chat!", resp) })
 		.receive("error", resp => { console.log("Unable to join chat", resp) })
 
+	// get presence info for chatroom
+	get_presence(chat)
 	// process new incoming msg 
 	chat.on("new_msg", payload => { new_message(payload) })
 
+}
 
+function get_presence(chat) {
+	var presence = new Presence(chat)
+	presence.onSync(() => {
+		document.querySelector("#pres").innerHTML = ""
+		renderOnlineUsers(presence)
+	})
+
+	// detect if user has joined for the 1st time or from another tab/device
+	presence.onJoin((id, current, newPres) => {
+		id = slice_id(id)
+		if (!current) {
+			console.log(`${id} Has joined the channel!`)
+		}
+	})
+
+	// detect if user has left from all tabs/devices, or is still present
+	presence.onLeave((id, current, leftPres) => {
+		if (current.metas.length === 0) {
+			console.log(`${id} Has left the channel!`)
+		} else {
+			console.log(`${id} Has left from a device!`)
+		}
+	})
+
+}
+function slice_id(id) {
+	return id.slice(0, 5)
 }
 
 

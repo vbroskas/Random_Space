@@ -17,9 +17,9 @@ defmodule SpaceWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket, _connect_info) do
+  def connect(params, socket, _connect_info) do
     IO.puts("connected to socket....")
-    {:ok, socket}
+    {:ok, assign(socket, :client_id, params["client_id"])}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

@@ -13,6 +13,7 @@ defmodule Space.Application do
       SpaceWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Space.PubSub},
+      SpaceWeb.Presence,
       # Start the Endpoint (http/https)
       SpaceWeb.Endpoint,
       # Start a worker by calling: Space.Worker.start_link(arg)
