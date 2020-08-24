@@ -1,7 +1,7 @@
 # Space
-Elixir/Phoenix app using a Dynamic Supervisor to start unique instance pairs of a GenServer and Agent. This app will query the NASA API to display a random space image every interval (default 15 sec). The user has the option of changing the interval or killing the process. If killed, the process is designed to restart with the most recent interval.
+Elixir/Phoenix app using a Dynamic Supervisor to start unique instance pairs of a GenServer and Agent. This app will query the NASA API to display a random space image every interval (default 25 sec). Clients have the option of changing intervals or killing the process. If killed, the process is designed to restart with the most recent interval storged in the Agent Process.
 
-The client interval also dictates which chat room they are currently subscribed to. Whenever they change intervals they will also change chat rooms.
+The client interval also dictates which chat room they are currently subscribed to. Whenever they change intervals they will also change chat rooms. Phoenix Presence is used to keep track of when users join/leave rooms, and displays a list of current users for each chat room.
 
 To start your Phoenix server:
 
