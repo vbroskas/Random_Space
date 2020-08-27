@@ -12,7 +12,7 @@
 	<h4>Interval is: <span id="interval"></span></h4>
 </div>
 
-<button id="kill">Kill Process </button>
+<%# <button id="kill">Kill Process </button> %>
 
 
 <hr>

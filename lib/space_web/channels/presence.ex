@@ -9,11 +9,21 @@ defmodule SpaceWeb.Presence do
     otp_app: :space,
     pubsub_server: Space.PubSub
 
-  def track_user_join(socket, user) do
-    SpaceWeb.Presence.track(socket, user.id, %{
-      typing: false,
-      first_name: user.first_name,
-      user_id: user.id
-    })
-  end
+  # def fetch(_topic, entries) do
+  #   %{
+  #     "room" => %{"room" => count_presences(entries, "viewers")}
+  #     # "users" => %{"users" => count_presences(entries, "users")}
+  #   }
+
+  #   # for {key, %{metas: metas}} <- presences, into: %{} do
+  #   #   {key, %{metas: metas, user: users[String.to_integer(key)]}}
+  #   # end
+  # end
+
+  # defp count_presences(entries, key) do
+  #   case get_in(entries, [key, :metas]) do
+  #     nil -> 0
+  #     metas -> metas
+  #   end
+  # end
 end

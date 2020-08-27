@@ -2,8 +2,9 @@ defmodule SpaceWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "room:*", SpaceWeb.RoomChannel
-  channel "chat:*", SpaceWeb.ChatChannel
+  # channel "room:*", SpaceWeb.RoomChannel
+  # channel "chat:*", SpaceWeb.ChatChannel
+  channel "space:*", SpaceWeb.SpaceChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -20,6 +21,7 @@ defmodule SpaceWeb.UserSocket do
   def connect(params, socket, _connect_info) do
     IO.puts("connected to socket....")
     {:ok, assign(socket, :client_id, params["client_id"])}
+    # {:ok, socket}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

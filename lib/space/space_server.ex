@@ -89,11 +89,6 @@ defmodule Space.SpaceServer do
 
   defp sched_refresh(interval, client_id) do
     [{pid, _value}] = Registry.lookup(ImageRegistry, "#{client_id}")
-    # IO.puts("---------")
-    # IO.inspect(pid)
-    # IO.puts(interval)
-    # IO.puts(get_interval_from_stash(client_id))
-    # IO.puts("---------")
 
     timer =
       Process.send_after(
@@ -115,12 +110,6 @@ defmodule Space.SpaceServer do
 
   defp broadcast_interval(interval, client_id, state) do
     IO.puts("BROAD 3")
-    # if chat channel stored in state, leave current channel & join channel for new interval
-    # leave curernt channel
-    # SpaceWeb.Endpoint.broadcast!("chat:#{state.current_chat}", "change_chat", %{
-    #   "new_chat" => interval,
-    #   "old_chat" => state.current_chat
-    # })
 
     SpaceWeb.Endpoint.broadcast!("room:#{client_id}", "new_interval", %{
       "interval" => interval,

@@ -17,7 +17,8 @@ defmodule Space.Application do
       # Start the Endpoint (http/https)
       SpaceWeb.Endpoint,
       # Start a worker by calling: Space.Worker.start_link(arg)
-      {Registry, keys: :unique, name: ImageRegistry},
+      # {Registry, keys: :unique, name: ImageRegistry},
+      {Registry, keys: :unique, name: SpaceRegistry},
       Space.ImageSupervisor
     ]
 
