@@ -1,0 +1,39 @@
+<script>
+	window.userToken = "<%= assigns[:auth_token] %>";
+	window.userId = "<%= assigns[:user_id] %>";
+	window.username = "<%= assigns[:username] %>";
+	window.defaultChannel = "25";
+</script>
+
+
+
+
+<div class="chat-cont">
+
+	<div id="url" class="chat-item flex-6">
+
+	</div>
+	<div class="chat-item flex-3">
+		<div id="messages" role="log" aria-live="polite"></div>
+		<div class="input-cont ">
+			<input class="input-item" id="chat-input" type="text"></input>
+			<button id="enter-chat-btn" class="input-item chat-submit">submit</button>
+		</div>
+	</div>
+
+	<div class="chat-item flex-1">
+		<div id="online-users">
+		</div>
+	</div>
+
+</div>
+
+
+
+
+	<input id="interval-input" type="text" placeholder="Enter Interval"></input>
+
+
+
+
+	<h4>Interval is: <span id="interval"></span></h4>

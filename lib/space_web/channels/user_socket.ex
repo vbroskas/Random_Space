@@ -1,10 +1,13 @@
 defmodule SpaceWeb.UserSocket do
   use Phoenix.Socket
+  require Logger
 
   ## Channels
   # channel "room:*", SpaceWeb.RoomChannel
   # channel "chat:*", SpaceWeb.ChatChannel
   channel "space:*", SpaceWeb.SpaceChannel
+
+  @one_day 86400
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -18,10 +21,27 @@ defmodule SpaceWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(params, socket, _connect_info) do
-    IO.puts("connected to socket....")
-    {:ok, assign(socket, :client_id, params["client_id"])}
-    # {:ok, socket}
+  def connect(%{"token" => token, "username" => username}, socket) do
+    IO.puts("IN CONNNNNECT SOCKET")
+
+    case verify(socket, token) do
+      {:ok, user_id} ->
+        socket =
+          socket
+          |> assign(:user_id, user_id)
+          |> assign(:username, username)
+
+        {:ok, socket}
+
+      {:error, err} ->
+        Logger.error("#{__MODULE__} connect error #{inspect(err)}")
+        :error
+    end
+  end
+
+  def connect(_, _socket) do
+    Logger.error("#{__MODULE__} connect error missing params")
+    :error
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
@@ -35,5 +55,16 @@ defmodule SpaceWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(_socket), do: nil
+  def id(%{assigns: %{user_id: user_id}}) do
+    "auth_socket:#{user_id}"
+  end
+
+  defp verify(socket, token) do
+    Phoenix.Token.verify(
+      socket,
+      "salt identifier",
+      token,
+      max_age: @one_day
+    )
+  end
 end

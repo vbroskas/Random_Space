@@ -17,6 +17,8 @@ defmodule SpaceWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    post "/space-chat", PageController, :space_chat
+    get "/space-chat", PageController, :space_chat
   end
 
   # Other scopes may use custom stacks.

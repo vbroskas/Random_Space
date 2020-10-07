@@ -11,15 +11,6 @@ defmodule Space.IntervalServer do
     GenServer.start_link(__MODULE__, interval, name: process_interval(interval))
   end
 
-  defp process_interval(interval) do
-    {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}}
-  end
-
-  def get_interval(pid) do
-    GenServer.call(pid, :get_interval)
-  end
-
-  # server callback functions--------------------------
   def init(interval) do
     state = %State{interval: interval}
     # get first image
@@ -30,6 +21,7 @@ defmodule Space.IntervalServer do
     {:ok, state, {:continue, :refresh}}
   end
 
+  # server callback functions--------------------------
   def handle_continue(:refresh, state) do
     sched_refresh(state.interval)
     {:noreply, state}
@@ -82,24 +74,16 @@ defmodule Space.IntervalServer do
           Poison.Parser.parse!(body, %{})
           |> get_in(["url"])
 
+        # set url in the agent for this interval
         update_url_in_stash(url, interval)
         SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_url", %{"url" => url})
 
       {:error, %HTTPoison.Error{id: nil, reason: :timeout}} ->
         IO.puts("****POISON DEAD****")
     end
+  end
 
-    # {:ok, %{status_code: 200, body: body}} = HTTPoison.get(request_url)
-    # :TODO create match for bad API response
-    # {"code":404,"msg":"No data available for date: 1995-06-18","service_version":"v1"}
-    # {:error, %HTTPoison.Error{id: nil, reason: :timeout}}
-
-    # url =
-    #   Poison.Parser.parse!(body, %{})
-    #   |> get_in(["url"])
-
-    # update url in stash
-    # update_url_in_stash(url, interval)
-    # send url to client
+  defp process_interval(interval) do
+    {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}}
   end
 end

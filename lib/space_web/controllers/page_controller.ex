@@ -1,24 +1,39 @@
 defmodule SpaceWeb.PageController do
   use SpaceWeb, :controller
+  import Ecto.Changeset
+  alias Space.{ChatNameForm}
 
   def index(conn, _params) do
-    # get random date---
-    today = DateTime.utc_now() |> DateTime.to_unix()
-    new_random_day = Enum.random(803_260_800..today)
+    changeset = ChatNameForm.new_changeset(%ChatNameForm{})
+    render(conn, "index.html", changeset: changeset)
+  end
 
-    new_random_date = DateTime.from_unix!(new_random_day) |> DateTime.to_date()
+  def space_chat(
+        conn,
+        %{"chat_name_form" => %{"name" => username} = form_input} = _params
+      ) do
+    changeset = ChatNameForm.validate_changeset(%ChatNameForm{}, form_input)
 
-    request_url =
-      "https://api.nasa.gov/planetary/apod?api_key=Tp4IT2WFMoc2dKArhDgwKjTMWhoEo1nnv5ayl3Vh&date=#{
-        new_random_date
-      }"
+    case apply_action(changeset, :insert) do
+      {:ok, %{id: user_id, name: username} = _data} ->
+        auth_token = generate_auth_token(conn, user_id)
 
-    {:ok, %{status_code: 200, body: body}} = HTTPoison.get(request_url)
+        conn
+        |> assign(:auth_token, auth_token)
+        |> assign(:user_id, user_id)
+        |> assign(:username, username)
+        |> put_session(:user_id, user_id)
+        |> put_session(:username, username)
+        |> put_session(:auth_token, auth_token)
+        |> render("space_chat.html")
 
-    url =
-      Poison.Parser.parse!(body, %{})
-      |> get_in(["url"])
+      {:error, changeset} ->
+        IO.puts("NOT VALID")
+        render(conn, "index.html", changeset: changeset)
+    end
+  end
 
-    render(conn, "index.html", url: url)
+  defp generate_auth_token(conn, user_id) do
+    Phoenix.Token.sign(conn, "salt identifier", user_id)
   end
 end
