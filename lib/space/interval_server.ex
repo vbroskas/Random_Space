@@ -1,9 +1,17 @@
 defmodule Space.IntervalServer do
   # @name :space_server
   use GenServer, restart: :transient
+  alias SpaceWeb.ChatTracker
 
   defmodule State do
     defstruct interval: ""
+  end
+
+  def check_room_status(interval) do
+    GenServer.cast(
+      {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}},
+      {:check_room_status, interval}
+    )
   end
 
   def start_link(interval) do
@@ -13,13 +21,8 @@ defmodule Space.IntervalServer do
 
   def init(interval) do
     state = %State{interval: interval}
-    # get first image
     get_new_image(interval)
-    # send interval to client
     broadcast_interval(interval)
-    # subscribe to topic
-    # SpaceWeb.Endpoint.subscribe("space:#{interval}")
-
     {:ok, state, {:continue, :refresh}}
   end
 
@@ -29,17 +32,19 @@ defmodule Space.IntervalServer do
     {:noreply, state}
   end
 
-  def handle_info(%{event: "presence_diff", payload: payload}, state) do
-    IO.puts("IN GENSERVER PREZ DIFF--------------------")
-    IO.inspect(payload)
-    {:noreply, state}
+  def handle_cast({:check_room_status, interval}, state) do
+    if ChatTracker.list("space:#{interval}") == [] do
+      IO.puts("KILLING Server for #{interval}!")
+      {:stop, :normal, state}
+    else
+      {:noreply, state}
+    end
   end
 
   @doc """
   use handle_info to process our refresh loop
   """
   def handle_info(:refresh, state) do
-    IO.puts("processing refresh for #{state.interval}")
     get_new_image(state.interval)
     sched_refresh(state.interval)
     {:noreply, state}
@@ -54,8 +59,6 @@ defmodule Space.IntervalServer do
   end
 
   defp broadcast_interval(interval) do
-    IO.puts("sending new interval...")
-
     SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_interval", %{
       "interval" => interval
     })
@@ -66,7 +69,6 @@ defmodule Space.IntervalServer do
   end
 
   defp get_new_image(interval) do
-    IO.puts("getting new img...for room #{interval}")
     today = DateTime.utc_now() |> DateTime.to_unix()
     new_random_day = Enum.random(803_260_800..today)
     new_random_date = DateTime.from_unix!(new_random_day) |> DateTime.to_date()

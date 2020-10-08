@@ -1,7 +1,6 @@
 defmodule SpaceWeb.ChatTracker do
   @behaviour Phoenix.Tracker
   alias Space.IntervalServer
-  alias SpaceWeb.ChatTrackerHelpers
 
   require Logger
 
@@ -39,17 +38,13 @@ defmodule SpaceWeb.ChatTracker do
     for {topic, {joins, leaves}} <- diff do
       <<"space:", sub_topic::binary>> = topic
 
-      for {key, meta} <- leaves do
-        IO.puts("#{sub_topic}~~username: #{meta.username} user: #{key}")
-
-        # IO.inspect(result)
-        # msg = {:leave, key, meta}
-        # Phoenix.PubSub.direct_broadcast!(state.node_name, state.pubsub_server, topic, msg)
+      for {_key, _meta} <- leaves do
+        # call genserver for this interval to see if it should be shutdown
+        IntervalServer.check_room_status(sub_topic)
       end
 
       for {key, meta} <- joins do
         IO.puts("#{sub_topic}~~presence join: key \"#{key}\" with meta #{inspect(meta)}")
-        # msg = {:join, key, meta}
         # Phoenix.PubSub.direct_broadcast!(state.node_name, state.pubsub_server, topic, msg)
       end
     end

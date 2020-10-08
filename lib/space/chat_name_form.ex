@@ -18,6 +18,7 @@ defmodule Space.ChatNameForm do
     new_changeset(chat_name_form, params)
     |> validate_required(@required_fields)
     |> validate_length(:name, min: 2)
+    |> validate_length(:name, max: 12)
     |> put_change(:id, Ecto.UUID.generate())
   end
 end
