@@ -17,6 +17,8 @@ defmodule Space.IntervalServer do
     get_new_image(interval)
     # send interval to client
     broadcast_interval(interval)
+    # subscribe to topic
+    # SpaceWeb.Endpoint.subscribe("space:#{interval}")
 
     {:ok, state, {:continue, :refresh}}
   end
@@ -24,6 +26,12 @@ defmodule Space.IntervalServer do
   # server callback functions--------------------------
   def handle_continue(:refresh, state) do
     sched_refresh(state.interval)
+    {:noreply, state}
+  end
+
+  def handle_info(%{event: "presence_diff", payload: payload}, state) do
+    IO.puts("IN GENSERVER PREZ DIFF--------------------")
+    IO.inspect(payload)
     {:noreply, state}
   end
 

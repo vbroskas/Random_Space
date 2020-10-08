@@ -46,11 +46,11 @@ if (window.userToken) {
 			.receive("ok", resp => { console.log("Joined space!", resp) })
 			.receive("error", resp => { console.log("Unable to join space", resp) })
 
+		let presence = new Presence(space)
+		presence.onSync(() => renderOnlineUsers(presence))
+
 		space.onError(() => console.log("there was an error!"))
 		space.onClose(() => console.log("the channel has gone away gracefully"))
-
-		// get presence info for chatroom
-		get_presence(space)
 
 		space.on("new_interval", payload => { new_interval(payload) })
 		space.on("new_url", payload => { new_url(payload) })
@@ -66,43 +66,27 @@ if (window.userToken) {
 		join_space(interval)
 	}
 
+	const onlineUserTemplate = function (user) {
+		var typingIndicator = ''
+		// if (user.typing) {
+		// 	typingIndicator = 'typing'
+		// }
+
+		return `<div id="online-user-${user.user_id}">
+		<strong class="${typingIndicator}">${user.username}</strong> 
+	  </div>`
+	}
+
 	function renderOnlineUsers(presence) {
-		let response = ""
-		presence.list((id, { metas: [first, ...rest] }) => {
-			id = slice_id(id)
-			response += `<br>${id}</br>`
-		})
+		console.log("IN RENDER USERS")
 
-		document.querySelector("#pres").innerHTML = response
+		let onlineUsers = presence.list((id, { metas: [user, ...rest] }) => {
+			return onlineUserTemplate(user)
+		}).join("")
+
+		document.querySelector("#online-users").innerHTML = onlineUsers
 	}
 
-	function get_presence(space) {
-		var presence = new Presence(space)
-
-		// listen for the "presence_state" and "presence_diff" events
-		presence.onSync(() => {
-			document.querySelector("#pres").innerHTML = ""
-			renderOnlineUsers(presence)
-		})
-
-		// detect if user has joined for the 1st time or from another tab/device
-		presence.onJoin((id, current, newPres) => {
-			id = slice_id(id)
-			if (!current) {
-				console.log(`${id} Has joined the channel!`)
-			}
-		})
-
-		// detect if user has left from all tabs/devices, or is still present
-		presence.onLeave((id, current, leftPres) => {
-			if (current.metas.length === 0) {
-				console.log(`${id} Has left the channel!`)
-			} else {
-				console.log(`${id} Has left from a device!`)
-			}
-		})
-
-	}
 
 	function new_interval(payload) {
 		intervalContainer.innerHTML = payload.interval

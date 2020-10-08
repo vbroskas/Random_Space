@@ -1,6 +1,8 @@
 defmodule SpaceWeb.SpaceChannel do
   use Phoenix.Channel
   alias SpaceWeb.Presence
+  alias SpaceWeb.ChatTracker
+  alias SpaceWeb.ChatTrackerHelpers
 
   def join("space:" <> interval, _payload, socket) do
     IO.puts("Joined space....#{interval}")
@@ -23,19 +25,35 @@ defmodule SpaceWeb.SpaceChannel do
     check_room_status(interval, socket)
 
     # Pubsub tracker--
-    # {:ok, _} = ChatTracker.track(socket)
+    {:ok, _} = ChatTracker.track(socket)
 
     # Presence tracker--
-    # metadata = %{
-    #   online_at: DateTime.utc_now(),
-    #   user_id: user_id,
-    #   username: username
-    # }
+    metadata = %{
+      online_at: DateTime.utc_now(),
+      user_id: user_id,
+      username: username
+    }
 
-    # {:ok, _} = Presence.track(pid, topic, user_id, metadata)
-    # push(socket, "presence_state", Presence.list(socket))
+    {:ok, _} = Presence.track(pid, topic, user_id, metadata)
+    push(socket, "presence_state", Presence.list(socket))
     {:noreply, socket}
   end
+
+  # intercept ["presence_diff"]
+
+  def handle_out("presence_diff", msg, socket) do
+    IO.puts("````````````````````")
+    IO.inspect(msg)
+    push(socket, "presence_diff", msg)
+    {:noreply, socket}
+  end
+
+  # def terminate(reason, socket) do
+  #   # ChatTrackerHelpers.list_users(socket.topic)
+  #   result = Presence.list(socket.topic)
+  #   IO.puts("IN HELPER>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+  #   IO.inspect(result)
+  # end
 
   defp get_url_from_stash(interval) do
     Space.IntervalStash.get({:via, Registry, {SpaceRegistry, "Stash-#{interval}"}})

@@ -1,11 +1,12 @@
 defmodule SpaceWeb.ChatTracker do
   @behaviour Phoenix.Tracker
   alias Space.IntervalServer
+  alias SpaceWeb.ChatTrackerHelpers
 
   require Logger
 
   @doc """
-  track all clients connected to each "chat:subtopic"
+  track all clients connected to each "space:interval"
   """
 
   def child_spec(opts) do
@@ -39,7 +40,9 @@ defmodule SpaceWeb.ChatTracker do
       <<"space:", sub_topic::binary>> = topic
 
       for {key, meta} <- leaves do
-        IO.puts("#{sub_topic}~~role: #{meta.role} user: #{key}")
+        IO.puts("#{sub_topic}~~username: #{meta.username} user: #{key}")
+
+        # IO.inspect(result)
         # msg = {:leave, key, meta}
         # Phoenix.PubSub.direct_broadcast!(state.node_name, state.pubsub_server, topic, msg)
       end
@@ -57,11 +60,11 @@ defmodule SpaceWeb.ChatTracker do
   @doc """
   track user_id and their role
   """
-  def track(%{channel_pid: pid, topic: topic, assigns: %{user_id: user_id, role: role}}) do
+  def track(%{channel_pid: pid, topic: topic, assigns: %{user_id: user_id, username: username}}) do
     metadata = %{
       online_at: DateTime.utc_now(),
       user_id: user_id,
-      role: role
+      username: username
     }
 
     Phoenix.Tracker.track(__MODULE__, pid, topic, user_id, metadata)

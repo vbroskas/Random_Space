@@ -16,6 +16,7 @@ defmodule Space.Application do
       SpaceWeb.Presence,
       # Start the Endpoint (http/https)
       SpaceWeb.Endpoint,
+      SpaceWeb.ChatTracker,
       # Start a worker by calling: Space.Worker.start_link(arg)
       # {Registry, keys: :unique, name: ImageRegistry},
       {Registry, keys: :unique, name: SpaceRegistry},
