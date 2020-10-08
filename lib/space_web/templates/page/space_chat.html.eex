@@ -5,8 +5,8 @@
 	window.defaultChannel = "25";
 </script>
 
-
-
+<h3>Next Image In..<span id="countdown"></span></h3>
+<%# <div id="countdown"></div> %>
 
 <div class="chat-cont">
 

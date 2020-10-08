@@ -17,6 +17,7 @@ if (window.userToken) {
 	let intervalInput = document.querySelector("#interval-input")
 	let chatInput = document.querySelector("#chat-input")
 	let messagesContainer = document.querySelector("#messages")
+	let countdownContainer = document.querySelector("#countdown")
 	var space
 	join_space(window.defaultChannel)
 
@@ -55,6 +56,7 @@ if (window.userToken) {
 		space.on("new_interval", payload => { new_interval(payload) })
 		space.on("new_url", payload => { new_url(payload) })
 		space.on("new_msg", payload => { new_message(payload) })
+		space.on("countdown_tick", payload => { countdown_tick(payload) })
 
 	}
 
@@ -87,6 +89,14 @@ if (window.userToken) {
 		document.querySelector("#online-users").innerHTML = onlineUsers
 	}
 
+	function countdown_tick(payload) {
+		// let imgItem = document.createElement("img")
+		// imgItem.src = payload.url
+		// imgItem.classList.add("space-img")
+		countdownContainer.innerHTML = payload.time
+		// imgContainer.appendChild(imgItem)
+	}
+
 
 	function new_interval(payload) {
 		intervalContainer.innerHTML = payload.interval
@@ -101,8 +111,10 @@ if (window.userToken) {
 	}
 
 	function new_message(payload) {
+		var today = new Date()
+		var time = today.getHours() + ":" + today.getMinutes()
 		let messageItem = document.createElement("p")
-		messageItem.innerText = `[${slice_id(payload.client_id)}] ${payload.body}`
+		messageItem.innerText = `${payload.username}(${time}) - ${payload.body}`
 		messagesContainer.appendChild(messageItem)
 	}
 

@@ -7,13 +7,6 @@ defmodule Space.IntervalServer do
     defstruct interval: ""
   end
 
-  def check_room_status(interval) do
-    GenServer.cast(
-      {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}},
-      {:check_room_status, interval}
-    )
-  end
-
   def start_link(interval) do
     IO.puts("starting up space genserver for interval #{interval}")
     GenServer.start_link(__MODULE__, interval, name: process_interval(interval))
@@ -21,14 +14,30 @@ defmodule Space.IntervalServer do
 
   def init(interval) do
     state = %State{interval: interval}
-    get_new_image(interval)
     broadcast_interval(interval)
     {:ok, state, {:continue, :refresh}}
   end
 
+  @doc """
+  check if any users still subscribed to the topic for this servers interval
+  """
+  def check_room_status(interval) do
+    GenServer.cast(
+      {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}},
+      {:check_room_status, interval}
+    )
+  end
+
   # server callback functions--------------------------
+
   def handle_continue(:refresh, state) do
-    sched_refresh(state.interval)
+    get_new_image(state.interval)
+
+    SpaceWeb.Endpoint.broadcast!("space:#{state.interval}", "countdown_tick", %{
+      "time" => state.interval
+    })
+
+    run_countdown(state.interval - 1)
     {:noreply, state}
   end
 
@@ -42,32 +51,59 @@ defmodule Space.IntervalServer do
   end
 
   @doc """
-  use handle_info to process our refresh loop
+  broadcast coutdown ticker, and new image url when ticker hits 0
   """
-  def handle_info(:refresh, state) do
-    get_new_image(state.interval)
-    sched_refresh(state.interval)
+  def handle_info({:countdown_tick, time_remaining}, state) do
+    case time_remaining do
+      0 ->
+        # IO.puts("TIME IS:: #{time_remaining}")
+        get_new_image(state.interval)
+
+        SpaceWeb.Endpoint.broadcast!("space:#{state.interval}", "countdown_tick", %{
+          "time" => state.interval
+        })
+
+        run_countdown(state.interval)
+
+      _ ->
+        # IO.puts("TIME IS:: #{time_remaining}")
+        SpaceWeb.Endpoint.broadcast!("space:#{state.interval}", "countdown_tick", %{
+          "time" => time_remaining
+        })
+
+        run_countdown(time_remaining - 1)
+    end
+
     {:noreply, state}
   end
 
-  defp sched_refresh(interval) do
+  defp run_countdown(time_remaining) do
     Process.send_after(
       self(),
-      :refresh,
-      :timer.seconds(interval)
+      {:countdown_tick, time_remaining},
+      :timer.seconds(1)
     )
   end
 
+  @doc """
+  send interval back to client
+  """
   defp broadcast_interval(interval) do
     SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_interval", %{
       "interval" => interval
     })
   end
 
+  @doc """
+  put current image url in the Agent for this interval
+  """
   defp update_url_in_stash(url, interval) do
     Space.IntervalStash.update({:via, Registry, {SpaceRegistry, "Stash-#{interval}"}}, url)
   end
 
+  @doc """
+  Select a random day between now() and beginning of time, and query NASA api with that day.
+  """
   defp get_new_image(interval) do
     today = DateTime.utc_now() |> DateTime.to_unix()
     new_random_day = Enum.random(803_260_800..today)
@@ -93,6 +129,9 @@ defmodule Space.IntervalServer do
     end
   end
 
+  @doc """
+  register the name for this server with the assocated interval
+  """
   defp process_interval(interval) do
     {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}}
   end
