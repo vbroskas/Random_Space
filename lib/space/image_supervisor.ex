@@ -25,9 +25,15 @@ defmodule Space.ImageSupervisor do
     DynamicSupervisor.start_child(__MODULE__, {Space.IntervalStash, interval})
     # start server for this interval
     case DynamicSupervisor.start_child(__MODULE__, {Space.IntervalServer, interval}) do
-      {:ok, _pid} -> IO.puts("STARTED SERVER FOR INTERVAL::::#{interval}")
-      {:error, {:already_started, _pid}} -> IO.puts("CHILD ALREADY RUNNING")
-      error -> IO.inspect(error.message)
+      {:ok, pid} ->
+        IO.puts("STARTED SERVER FOR INTERVAL::::#{interval}")
+        IO.inspect(pid)
+
+      {:error, {:already_started, _pid}} ->
+        IO.puts("CHILD ALREADY RUNNING")
+
+      error ->
+        IO.inspect(error.message)
     end
   end
 end

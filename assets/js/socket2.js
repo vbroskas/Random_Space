@@ -17,29 +17,43 @@ if (window.userToken) {
 	let intervalInput = document.querySelector("#interval-input")
 	let chatInput = document.querySelector("#chat-input")
 	let messagesContainer = document.querySelector("#messages")
+	let chatEnterBtn = document.querySelector("#enter-chat-btn")
 	let countdownContainer = document.querySelector("#countdown")
 	let explanationContainer = document.querySelector('#explanation')
+	const intervalForm = document.getElementById('interval-form');
 	var space
+
 	join_space(window.defaultChannel)
 
-	intervalInput.addEventListener("keypress", event => {
-		if (event.key === 'Enter') {
-			let interval = intervalInput.value
+	intervalForm.addEventListener("submit", event => {
+		let interval = document.getElementById('interval-input').value;
+		let int = parseInt(interval)
+
+		if ((int % 1 != 0) || (Number(int) == NaN) || (int < 10)) {
+			console.log("bad Interval")
+			interval.classList.add("interval-error")
+
+		} else {
+			change_room(int)
 			intervalInput.value = ""
-			// join new space room
-			console.log("about to change space")
-			change_room(interval)
+
 		}
 	})
 
+
 	chatInput.addEventListener("keypress", event => {
 		if (event.key === 'Enter') {
-			console.log("ENTER")
+
 			space.push("new_msg", { body: chatInput.value })
 			chatInput.value = ""
 		}
 	})
 
+	chatEnterBtn.addEventListener("click", event => {
+		space.push("new_msg", { body: chatInput.value })
+		chatInput.value = ""
+
+	})
 
 
 	function join_space(interval) {

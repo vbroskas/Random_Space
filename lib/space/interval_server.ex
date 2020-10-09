@@ -43,7 +43,8 @@ defmodule Space.IntervalServer do
 
   def handle_cast({:check_room_status, interval}, state) do
     if ChatTracker.list("space:#{interval}") == [] do
-      IO.puts("KILLING Server for #{interval}!")
+      IO.puts("KILLING Server & Agent for #{interval}!")
+      Agent.stop({:via, Registry, {SpaceRegistry, "Stash-#{interval}"}})
       {:stop, :normal, state}
     else
       {:noreply, state}
@@ -138,11 +139,17 @@ defmodule Space.IntervalServer do
     {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}}
   end
 
+  @doc """
+  pull url out of api query body
+  """
   defp parse_url(body) do
     Poison.Parser.parse!(body, %{})
     |> get_in(["url"])
   end
 
+  @doc """
+  pull description out of api query body
+  """
   defp parse_explanation(body) do
     Poison.Parser.parse!(body, %{})
     |> get_in(["explanation"])

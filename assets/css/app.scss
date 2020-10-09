@@ -30,6 +30,10 @@
   display: none;
 }
 
+.interval-error{
+	border: 2px solid red;
+}
+
 body {
 	background: #2b3130;
 	color: #cccccc;
@@ -41,7 +45,7 @@ body {
 
   .parent {
 	display: grid;
-	grid-template: 20px auto 1fr / 50% 40% 10%;
+	grid-template: auto auto 1fr / 50% 40% 10%;
 	border: 1px solid #aeaeae;
   }
   

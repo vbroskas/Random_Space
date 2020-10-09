@@ -5,6 +5,13 @@
 	window.defaultChannel = "25";
 </script>
 
+<%# <form id="interval-form" onsubmit="event.preventDefault()">
+	<input id="interval-input" type="number" min="10" required>
+	<button type="submit">Submit</button>
+</form> %>
+
+
+
 <h3>New Image In...<span id="countdown"></span></h3>
 <h4>Current Interval: <span id="interval"></span></h4>
 
@@ -12,11 +19,15 @@
 
 <div class="parent">
 	<div class="chat-header">
-		<div class="input-cont">
-			<input class="input-item" id="interval-input" type="text" placeholder="New Interval"></input>
-			<button id="enter-interval-btn" class="input-item interval-submit">submit</button>
+		<%# <div class="input-cont"> %>
 
-		</div>
+
+			<form id="interval-form" onsubmit="event.preventDefault()">
+	<input id="interval-input" type="number" min="10" required>
+	<button type="submit">Submit</button>
+</form>
+
+		<%# </div> %>
 
 
 	</div>
@@ -28,36 +39,6 @@
 			<button id="enter-chat-btn" class="input-item chat-submit">submit</button>
 		</div>
 	</div>
-	<div id="online-users" class="right-side ">Right Sidebar</div>
+	<div id="online-users" class="right-side "></div>
 	<div id="explanation"></div>
 </div>
-
-<!-- <div class="chat-cont">
-
-	<div id="url" class="chat-item flex-6">
-
-	</div>
-	<div class="chat-item flex-3">
-		<div id="messages" role="log" aria-live="polite"></div>
-		<div class="input-cont ">
-			<input class="input-item" id="chat-input" type="text"></input>
-			<button id="enter-chat-btn" class="input-item chat-submit">submit</button>
-		</div>
-	</div>
-
-	<div class="chat-item flex-1">
-		<div id="online-users">
-		</div>
-	</div>
-
-</div> -->
-
-
-
-<!-- <div><input id="interval-input" type="text" placeholder="Enter Interval"></input></div> -->
-
-
-
-
-
-<h4>Interval is: <span id="interval"></span></h4>

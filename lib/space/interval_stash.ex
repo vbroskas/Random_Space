@@ -1,5 +1,5 @@
 defmodule Space.IntervalStash do
-  use Agent
+  use Agent, restart: :transient
 
   def start_link(interval) do
     Agent.start_link(fn -> "" end, name: process_client_id(interval))
