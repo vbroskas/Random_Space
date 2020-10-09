@@ -90,11 +90,7 @@ if (window.userToken) {
 	}
 
 	function countdown_tick(payload) {
-		// let imgItem = document.createElement("img")
-		// imgItem.src = payload.url
-		// imgItem.classList.add("space-img")
 		countdownContainer.innerHTML = payload.time
-		// imgContainer.appendChild(imgItem)
 	}
 
 
@@ -116,6 +112,9 @@ if (window.userToken) {
 		let messageItem = document.createElement("p")
 		messageItem.innerText = `${payload.username}(${time}) - ${payload.body}`
 		messagesContainer.appendChild(messageItem)
+
+		const targetNode = document.querySelector("#messages")
+		targetNode.scrollTop = targetNode.scrollHeight
 	}
 
 

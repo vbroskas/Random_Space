@@ -10,7 +10,7 @@ defmodule SpaceWeb.PageController do
 
   def space_chat(
         conn,
-        %{"chat_name_form" => %{"name" => username} = form_input} = _params
+        %{"chat_name_form" => %{"name" => _username} = form_input} = _params
       ) do
     changeset = ChatNameForm.validate_changeset(%ChatNameForm{}, form_input)
 

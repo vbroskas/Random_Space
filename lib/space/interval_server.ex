@@ -56,17 +56,15 @@ defmodule Space.IntervalServer do
   def handle_info({:countdown_tick, time_remaining}, state) do
     case time_remaining do
       0 ->
-        # IO.puts("TIME IS:: #{time_remaining}")
         get_new_image(state.interval)
 
         SpaceWeb.Endpoint.broadcast!("space:#{state.interval}", "countdown_tick", %{
           "time" => state.interval
         })
 
-        run_countdown(state.interval)
+        run_countdown(state.interval - 1)
 
       _ ->
-        # IO.puts("TIME IS:: #{time_remaining}")
         SpaceWeb.Endpoint.broadcast!("space:#{state.interval}", "countdown_tick", %{
           "time" => time_remaining
         })

@@ -46,24 +46,19 @@ defmodule SpaceWeb.SpaceChannel do
     case Registry.lookup(SpaceRegistry, "space_server:#{interval}") do
       # no current server running for this interval
       [] ->
-        interval = interval |> String.to_integer()
-        Space.ImageSupervisor.start_interval_server(interval)
+        interval
+        |> String.to_integer()
+        |> Space.ImageSupervisor.start_interval_server()
+
         {:noreply, socket}
 
       # server already running for this interval
       [{_pid, _value}] ->
-        IO.puts("ALREADY RUNNING")
-
-        # TODO this can be a push i think
-        # push(socket, "new_interval", %{"interval" => interval})
         SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_interval", %{
           "interval" => interval
         })
 
-        # grab current image url from storage
         url = get_url_from_stash(interval)
-        IO.puts("GOT URL FROM STASH")
-        # broadcast to client who just connected
         SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_url", %{"url" => url})
 
         {:noreply, socket}
