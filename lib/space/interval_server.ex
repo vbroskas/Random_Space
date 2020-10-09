@@ -114,13 +114,17 @@ defmodule Space.IntervalServer do
 
     case HTTPoison.get(request_url) do
       {:ok, %{status_code: 200, body: body}} ->
-        url =
-          Poison.Parser.parse!(body, %{})
-          |> get_in(["url"])
+        url = parse_url(body)
+        explanation = parse_explanation(body)
+        IO.inspect(explanation)
 
         # set url in the agent for this interval
         update_url_in_stash(url, interval)
-        SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_url", %{"url" => url})
+
+        SpaceWeb.Endpoint.broadcast!("space:#{interval}", "new_url", %{
+          "url" => url,
+          "explanation" => explanation
+        })
 
       {:error, %HTTPoison.Error{id: nil, reason: :timeout}} ->
         IO.puts("****POISON DEAD****")
@@ -132,5 +136,15 @@ defmodule Space.IntervalServer do
   """
   defp process_interval(interval) do
     {:via, Registry, {SpaceRegistry, "space_server:#{interval}"}}
+  end
+
+  defp parse_url(body) do
+    Poison.Parser.parse!(body, %{})
+    |> get_in(["url"])
+  end
+
+  defp parse_explanation(body) do
+    Poison.Parser.parse!(body, %{})
+    |> get_in(["explanation"])
   end
 end

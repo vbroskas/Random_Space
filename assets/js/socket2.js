@@ -18,6 +18,7 @@ if (window.userToken) {
 	let chatInput = document.querySelector("#chat-input")
 	let messagesContainer = document.querySelector("#messages")
 	let countdownContainer = document.querySelector("#countdown")
+	let explanationContainer = document.querySelector('#explanation')
 	var space
 	join_space(window.defaultChannel)
 
@@ -104,6 +105,7 @@ if (window.userToken) {
 		imgItem.classList.add("space-img")
 		imgContainer.innerHTML = ''
 		imgContainer.appendChild(imgItem)
+		explanationContainer.innerHTML = payload.explanation
 	}
 
 	function new_message(payload) {

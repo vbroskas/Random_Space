@@ -29,7 +29,7 @@
 		</div>
 	</div>
 	<div id="online-users" class="right-side ">Right Sidebar</div>
-	<div class="chat-footer">Footer</div>
+	<div id="explanation"></div>
 </div>
 
 <!-- <div class="chat-cont">
