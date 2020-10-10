@@ -8,7 +8,7 @@
 // from the params if you are not using authentication.
 import { Socket, Presence } from "phoenix"
 
-let socket = new Socket("/socket", { params: { token: window.userToken, user_id: window.user_id, username: window.username } })
+let socket = new Socket("/socket", { params: { token: window.userToken, user_id: window.userId, username: window.username } })
 
 if (window.userToken) {
 
@@ -125,9 +125,21 @@ if (window.userToken) {
 	function new_message(payload) {
 		var today = new Date()
 		var time = today.getHours() + ":" + today.getMinutes()
+		let highlight = 'no-highlight'
+		if (payload.user_id == window.window.userId) {
+			highlight = "highlight"
+		}
 		let messageItem = document.createElement("p")
-		messageItem.innerText = `${payload.username}(${time}) - ${payload.body}`
+		messageItem.innerHTML = `<span class="${highlight}">${payload.username}</span>(${time}) - ${payload.body}`
+		// var guts = document.createTextNode(`<span class="${highlight}">${payload.username}</span>(${time}) - ${payload.body})`)
+		// messageItem.appendChild(guts)
 		messagesContainer.appendChild(messageItem)
+
+
+		// messageItem.classList.add(`${highlight}`)
+		// var test = `<p><span class="${highlight}">${payload.username}</span>(${time}) - ${payload.body}</p>`
+		// messageItem.innerText = `${payload.username}(${time}) - ${payload.body}`
+
 
 		const targetNode = document.querySelector("#messages")
 		targetNode.scrollTop = targetNode.scrollHeight

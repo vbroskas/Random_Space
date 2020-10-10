@@ -19,17 +19,10 @@
 
 <div class="parent">
 	<div class="chat-header">
-		<%# <div class="input-cont"> %>
-
-
-			<form id="interval-form" onsubmit="event.preventDefault()">
-	<input id="interval-input" type="number" min="10" required>
-	<button type="submit">Submit</button>
-</form>
-
-		<%# </div> %>
-
-
+		<form id="interval-form" onsubmit="event.preventDefault()">
+			<input id="interval-input" type="number" min="10" required placeholder="Enter a number">
+			<button type="submit">Submit</button>
+		</form>
 	</div>
 	<div id="url" class="left-side "></div>
 	<div class="chat-main">

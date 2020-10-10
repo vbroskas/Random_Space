@@ -11,7 +11,12 @@ defmodule SpaceWeb.SpaceChannel do
   end
 
   def handle_in("new_msg", %{"body" => body}, socket) do
-    broadcast!(socket, "new_msg", %{body: body, username: socket.assigns.username})
+    broadcast!(socket, "new_msg", %{
+      body: body,
+      username: socket.assigns.username,
+      user_id: socket.assigns.user_id
+    })
+
     {:noreply, socket}
   end
 

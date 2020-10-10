@@ -89,11 +89,17 @@ body {
 	flex: 1;
 }
 
+#interval-form{
+	display: flex;
+}
+
+.highlight{
+	color:red;
+}
 
 
 
-
-  //-----------
+//-----------
 
 .space-img{
 	max-width: 100%;
@@ -135,42 +141,5 @@ body {
 
 #online-users{
 	overflow-y: scroll; 
-	// height: 50rem;
 }
 
-.current-users-h3{
-	text-align: right;
-}
-
-#pres{
-	overflow: scroll;
-}
-
-.chat-cont{
-	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
-	// height: 70vh;
-	
-}
-.chat-item{
-	
-	border: 1px solid #ad7000;
-}
-
-.flex-6{
-	flex: 5;
-	display: flex;
-    justify-content: space-around;
-}
-.flex-3{
-	flex: 3;
-	// text-align: center;
-	height: 50rem;
-}
-
-.flex-1{
-	flex: 1;
-	text-align: center;
-	height: 50rem;
-}

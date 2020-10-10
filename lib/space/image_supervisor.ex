@@ -22,12 +22,22 @@ defmodule Space.ImageSupervisor do
 
   def start_interval_server(interval) do
     # start stash for this interval
-    DynamicSupervisor.start_child(__MODULE__, {Space.IntervalStash, interval})
+
+    case DynamicSupervisor.start_child(__MODULE__, {Space.IntervalStash, interval}) do
+      {:ok, _pid} ->
+        IO.puts("STARTED Stash FOR INTERVAL::::#{interval}")
+
+      {:error, {:already_started, _pid}} ->
+        IO.puts("CHILD ALREADY RUNNING")
+
+      error ->
+        IO.inspect(error.message)
+    end
+
     # start server for this interval
     case DynamicSupervisor.start_child(__MODULE__, {Space.IntervalServer, interval}) do
-      {:ok, pid} ->
+      {:ok, _pid} ->
         IO.puts("STARTED SERVER FOR INTERVAL::::#{interval}")
-        IO.inspect(pid)
 
       {:error, {:already_started, _pid}} ->
         IO.puts("CHILD ALREADY RUNNING")
