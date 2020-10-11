@@ -21,6 +21,9 @@ if (window.userToken) {
 	let countdownContainer = document.querySelector("#countdown")
 	let explanationContainer = document.querySelector('#explanation')
 	const intervalForm = document.getElementById('interval-form');
+	var modal = document.getElementById("myModal");
+	var modalImg = document.getElementById("modal-img");
+	var span = document.getElementsByClassName("close")[0];
 	var space
 
 	join_space(window.defaultChannel)
@@ -88,14 +91,12 @@ if (window.userToken) {
 		// if (user.typing) {
 		// 	typingIndicator = 'typing'
 		// }
-
 		return `<div id="online-user-${user.user_id}">
 		<strong class="${typingIndicator}">${user.username}</strong> 
 	  </div>`
 	}
 
 	function renderOnlineUsers(presence) {
-		console.log("IN RENDER USERS")
 
 		let onlineUsers = presence.list((id, { metas: [user, ...rest] }) => {
 			return onlineUserTemplate(user)
@@ -120,6 +121,20 @@ if (window.userToken) {
 		imgContainer.innerHTML = ''
 		imgContainer.appendChild(imgItem)
 		explanationContainer.innerHTML = payload.explanation
+
+		// display image in modal 
+		imgItem.onclick = function () {
+			modal.style.display = "grid";
+			modalImg.src = this.src;
+
+		}
+		// close the modal
+		span.onclick = function () {
+			modal.style.display = "none";
+		}
+
+
+
 	}
 
 	function new_message(payload) {
@@ -131,16 +146,7 @@ if (window.userToken) {
 		}
 		let messageItem = document.createElement("p")
 		messageItem.innerHTML = `<span class="${highlight}">${payload.username}</span>(${time}) - ${payload.body}`
-		// var guts = document.createTextNode(`<span class="${highlight}">${payload.username}</span>(${time}) - ${payload.body})`)
-		// messageItem.appendChild(guts)
 		messagesContainer.appendChild(messageItem)
-
-
-		// messageItem.classList.add(`${highlight}`)
-		// var test = `<p><span class="${highlight}">${payload.username}</span>(${time}) - ${payload.body}</p>`
-		// messageItem.innerText = `${payload.username}(${time}) - ${payload.body}`
-
-
 		const targetNode = document.querySelector("#messages")
 		targetNode.scrollTop = targetNode.scrollHeight
 	}

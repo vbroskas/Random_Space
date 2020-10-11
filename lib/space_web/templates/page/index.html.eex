@@ -1,21 +1,53 @@
+<script>
+	window.userToken = "<%= Plug.Conn.get_session(@conn, :auth_token) %>";
+	window.userId = "<%= Plug.Conn.get_session(@conn, :user_id) %>";
+	window.username = "<%= Plug.Conn.get_session(@conn, :username) %>";
+	window.defaultChannel = "25";
+</script>
 
-<div class="chat-form-cont">
-	<div class="chat-form-item">
-		<h1>Welcome!</h1>
-		<p>Spaced Out is an anonymous chat interface to view random images from space and discuss them with strangers</p>
-		<%= form_for @changeset, Routes.page_path(@conn, :space_chat),  fn f -> %>
-		<%= if @changeset.action do %>
-		<div class="alert alert-danger">
-			Sorry, there are errors in your submission. Please correct them.
-		</div>
-		<% end %>
-		<label>
-			Name: <%= text_input f, :name %>
-		</label>
-		<%= error_tag f, :name %>
-		<%= submit "Submit", type: "submit" %>
 
-		<% end %>
+
+
+<h4>Current Interval: <span id="interval"></span> seconds</h4>
+<h3>New Image In...<span id="countdown"></span></h3>
+
+
+<div class="parent">
+	<div class="chat-header">
+		<form id="interval-form" onsubmit="event.preventDefault()">
+			<input id="interval-input" type="number" min="10" required placeholder="Enter a number">
+			<button type="submit">Submit</button>
+		</form>
 	</div>
+	<div id="url" class="left-side "></div>
+	<div class="chat-main">
+		<div id="messages" role="log" aria-live="polite"></div>
+		<div class="input-cont">
+			<input class="input-item" id="chat-input" type="text"></input>
+			<button id="enter-chat-btn" class="input-item chat-submit">submit</button>
+		</div>
+	</div>
+	<div id="online-users" class="right-side "></div>
+	<div id="explanation"></div>
+</div>
+
+
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- The Close Button -->
+  <span class="close">&times;</span>
+
+  <!-- Modal Content (The Image) -->
+  <img class="modal-content" id="modal-img">
+
 
 </div>
+
+<script>
+
+
+
+
+</script>

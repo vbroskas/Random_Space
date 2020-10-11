@@ -117,7 +117,6 @@ defmodule Space.IntervalServer do
       {:ok, %{status_code: 200, body: body}} ->
         url = parse_url(body)
         explanation = parse_explanation(body)
-        IO.inspect(explanation)
 
         # set url in the agent for this interval
         update_url_in_stash(url, interval)

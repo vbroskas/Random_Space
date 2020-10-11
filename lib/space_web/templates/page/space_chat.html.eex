@@ -5,16 +5,11 @@
 	window.defaultChannel = "25";
 </script>
 
-<%# <form id="interval-form" onsubmit="event.preventDefault()">
-	<input id="interval-input" type="number" min="10" required>
-	<button type="submit">Submit</button>
-</form> %>
 
 
 
-<h3>New Image In...<span id="countdown"></span></h3>
 <h4>Current Interval: <span id="interval"></span></h4>
-
+<h3>New Image In...<span id="countdown"></span></h3>
 
 
 <div class="parent">
