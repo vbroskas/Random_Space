@@ -11,13 +11,12 @@ defmodule SpaceWeb.SessionController do
     render(conn, "index.html", changeset: changeset)
   end
 
-  def create(conn, %{"chat_name_form" => %{"name" => _username} = form_input}) do
+  def create(conn, %{"chat_name_form" => form_input}) do
     changeset = ChatNameForm.validate_changeset(%ChatNameForm{}, form_input)
 
     case apply_action(changeset, :insert) do
-      {:ok, %{id: user_id, name: username} = data} ->
+      {:ok, %{id: user_id, name: username} = _data} ->
         auth_token = generate_auth_token(conn, user_id)
-        IO.inspect(data)
 
         conn
         |> put_session(:user_id, user_id)
