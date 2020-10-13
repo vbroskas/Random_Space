@@ -2,6 +2,7 @@ defmodule Space.IntervalServer do
   # @name :space_server
   use GenServer, restart: :transient
   alias SpaceWeb.ChatTracker
+  alias Space.IntervalStash
 
   defmodule State do
     defstruct interval: ""
@@ -97,7 +98,7 @@ defmodule Space.IntervalServer do
   put current image url in the Agent for this interval
   """
   defp update_url_in_stash(url, interval) do
-    Space.IntervalStash.update({:via, Registry, {SpaceRegistry, "Stash-#{interval}"}}, url)
+    IntervalStash.update({:via, Registry, {SpaceRegistry, "Stash-#{interval}"}}, url)
   end
 
   @doc """

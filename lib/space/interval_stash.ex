@@ -2,6 +2,7 @@ defmodule Space.IntervalStash do
   use Agent, restart: :transient
 
   def start_link(interval) do
+    IO.puts("IN STASH START!!")
     Agent.start_link(fn -> "" end, name: process_client_id(interval))
   end
 

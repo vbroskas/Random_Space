@@ -3,8 +3,12 @@ defmodule SpaceWeb.SpaceChannelTest do
   import ExUnit.CaptureLog
   alias SpaceWeb.UserSocket
   alias SpaceWeb.SpaceChannel
+  alias Space.IntervalServer
+  alias Space.IntervalStash
 
   setup do
+    # connecting to the socket and interval channel will also run through the process of starting a stash and
+    # genserver process for the specified interval
     {:ok, _, socket} =
       UserSocket
       |> socket("user_id", %{user_id: "123asdf", username: "james"})
@@ -21,5 +25,18 @@ defmodule SpaceWeb.SpaceChannelTest do
       username: "james",
       user_id: "123asdf"
     }
+  end
+
+  describe "check that stash update and get works" do
+    test "check stash insert" do
+      IntervalStash.update({:via, Registry, {SpaceRegistry, "Stash-25"}}, "www.test.com")
+      assert IntervalStash.get({:via, Registry, {SpaceRegistry, "Stash-25"}}) == "www.test.com"
+    end
+  end
+
+  describe "test calls and casts in genserver" do
+    test "check room status cast" do
+      assert IntervalServer.check_room_status(25) == :ok
+    end
   end
 end
