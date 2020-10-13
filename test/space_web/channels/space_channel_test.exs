@@ -1,68 +1,25 @@
 defmodule SpaceWeb.SpaceChannelTest do
   use SpaceWeb.ChannelCase
-  alias SpaceWeb.UserSocket
   import ExUnit.CaptureLog
+  alias SpaceWeb.UserSocket
+  alias SpaceWeb.SpaceChannel
 
-  describe "connect/3 success" do
-    test "can be connected to with a valid token" do
-      assert {:ok, %Phoenix.Socket{}} =
-               connect(UserSocket, %{"token" => generate_token(1), "username" => "sam"})
+  setup do
+    {:ok, _, socket} =
+      UserSocket
+      |> socket("user_id", %{user_id: "123asdf", username: "james"})
+      |> subscribe_and_join(SpaceChannel, "space:25")
 
-      assert {:ok, %Phoenix.Socket{}} =
-               connect(UserSocket, %{"token" => generate_token(2), "username" => "bob"})
-    end
+    %{socket: socket}
   end
 
-  defp generate_token(id, opts \\ []) do
-    salt = Keyword.get(opts, :salt, "salt identifier")
-    Phoenix.Token.sign(SpaceWeb.Endpoint, salt, id)
-  end
+  test "new msg from clinet", %{socket: socket} do
+    push(socket, "new_msg", %{body: "The mesage"})
 
-  describe "connect/3 error" do
-    test "cannot be connected to with an invalid salt" do
-      params = %{"token" => generate_token(1, salt: "invalid"), "username" => "bob"}
-
-      assert capture_log(fn ->
-               assert :error = connect(UserSocket, params)
-             end) =~ "[error] #{UserSocket} connect error :invalid"
-    end
-
-    test "cannot be connected to without a token" do
-      params = %{"username" => "bob"}
-
-      assert capture_log(fn ->
-               assert :error = connect(UserSocket, params)
-             end) =~ "[error] #{UserSocket} connect error missing params"
-    end
-
-    test "cannot be connected to with a nonsense token" do
-      params = %{"token" => "nonsense", "username" => "bob"}
-
-      assert capture_log(fn ->
-               assert :error = connect(UserSocket, params)
-             end) =~ "[error] #{UserSocket} connect error :invalid"
-    end
-
-    test "cannot be connected to without username" do
-      params = %{"token" => generate_token(2)}
-
-      assert capture_log(fn ->
-               assert :error = connect(UserSocket, params)
-             end) =~ "[error] #{UserSocket} connect error missing params"
-    end
-  end
-
-  describe "id/1" do
-    test "an identifier is based on the connected ID" do
-      assert {:ok, socket} =
-               connect(UserSocket, %{"token" => generate_token(1), "username" => "bob"})
-
-      assert UserSocket.id(socket) == "auth_socket:1"
-
-      assert {:ok, socket} =
-               connect(UserSocket, %{"token" => generate_token(2), "username" => "bob"})
-
-      assert UserSocket.id(socket) == "auth_socket:2"
-    end
+    assert_broadcast "new_msg", %{
+      body: "The mesage",
+      username: "james",
+      user_id: "123asdf"
+    }
   end
 end

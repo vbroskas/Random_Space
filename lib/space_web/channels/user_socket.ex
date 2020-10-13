@@ -3,8 +3,6 @@ defmodule SpaceWeb.UserSocket do
   require Logger
 
   ## Channels
-  # channel "room:*", SpaceWeb.RoomChannel
-  # channel "chat:*", SpaceWeb.ChatChannel
   channel "space:*", SpaceWeb.SpaceChannel
 
   @one_day 86400
