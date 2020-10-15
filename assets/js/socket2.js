@@ -133,16 +133,20 @@ if (window.userToken) {
 			imgItem.classList.add("space-img")
 			imgContainer.innerHTML = ''
 			imgContainer.appendChild(imgItem)
+
+			// display image in modal 
+			imgItem.onclick = function () {
+				modal.style.display = "grid";
+				modalImg.src = this.src;
+
+			}
 		}
+		let explainationItem = document.createElement("p")
+		explainationItem.innerHTML = payload.explanation
+		explanationContainer.innerHTML = ''
+		explanationContainer.appendChild(explainationItem)
 
-		explanationContainer.innerHTML = payload.explanation
 
-		// display image in modal 
-		imgItem.onclick = function () {
-			modal.style.display = "grid";
-			modalImg.src = this.src;
-
-		}
 		// close the modal
 		span.onclick = function () {
 			modal.style.display = "none";

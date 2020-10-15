@@ -45,7 +45,7 @@ body {
 	font-family: "Source Code Pro", monospace;
 	font-size: 14pt;
 	display: grid;
-    place-items: center;
+
 
   }
 
@@ -94,6 +94,8 @@ button, h1 {
   #explanation {
 	grid-column: 1 / 4;
 	border: 1px solid #aeaeae;
+	text-align: center;
+	padding: 1rem;
   }
 
 .chat-form-cont{
@@ -251,5 +253,14 @@ button[type="submit"], #enter-chat-btn {
 	.modal-content {
 	  width: 100%;
 	}
+  }
+
+  @media screen and (max-width: 768px) {
+	.parent {
+		display: block;
+		
+	 }
+  
+	
   }
 

@@ -16,7 +16,7 @@
 	<div class="chat-header">
 		<form id="interval-form" onsubmit="event.preventDefault()">
 			<input id="interval-input" type="number" min="10" required placeholder="Enter a number">
-			<button type="submit">Submit</button>
+			<button type="submit">Change Interval</button>
 		</form>
 	</div>
 	<div id="url" class="left-side "></div>
