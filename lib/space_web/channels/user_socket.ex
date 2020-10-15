@@ -20,8 +20,6 @@ defmodule SpaceWeb.UserSocket do
   # performing token verification on connect.
   @impl true
   def connect(%{"token" => token, "username" => username}, socket) do
-    # IO.puts("IN CONNNNNECT SOCKET")
-
     case verify(socket, token) do
       {:ok, user_id} ->
         socket =

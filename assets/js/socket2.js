@@ -115,11 +115,25 @@ if (window.userToken) {
 	}
 
 	function new_url(payload) {
-		let imgItem = document.createElement("img")
-		imgItem.src = payload.url
-		imgItem.classList.add("space-img")
-		imgContainer.innerHTML = ''
-		imgContainer.appendChild(imgItem)
+
+		let url = payload.url
+
+		if (url.includes("youtube")) {
+			let iframe = document.createElement('iframe')
+			iframe.src = url
+			iframe.classList.add("space-vid")
+			imgContainer.innerHTML = ''
+			imgContainer.appendChild(iframe)
+
+		}
+		else {
+			let imgItem = document.createElement("img")
+			imgItem.src = payload.url
+			imgItem.classList.add("space-img")
+			imgContainer.innerHTML = ''
+			imgContainer.appendChild(imgItem)
+		}
+
 		explanationContainer.innerHTML = payload.explanation
 
 		// display image in modal 

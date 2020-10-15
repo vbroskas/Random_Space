@@ -39,4 +39,13 @@ defmodule SpaceWeb.SpaceChannelTest do
       assert IntervalServer.check_room_status(25) == :ok
     end
   end
+
+  defp connect() do
+    assert {:ok, _, socket} =
+             UserSocket
+             |> socket("user_id", %{user_id: "123asdf", username: "james"})
+             |> subscribe_and_join(SpaceChannel, "space:25")
+
+    socket
+  end
 end

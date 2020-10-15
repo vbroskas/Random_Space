@@ -13,11 +13,6 @@ defmodule SpaceWeb.UserSocketTest do
     end
   end
 
-  defp generate_token(id, opts \\ []) do
-    salt = Keyword.get(opts, :salt, "salt identifier")
-    Phoenix.Token.sign(SpaceWeb.Endpoint, salt, id)
-  end
-
   describe "connect/3 error" do
     test "cannot be connected to with an invalid salt" do
       params = %{"token" => generate_token(1, salt: "invalid"), "username" => "bob"}
@@ -64,5 +59,10 @@ defmodule SpaceWeb.UserSocketTest do
 
       assert UserSocket.id(socket) == "auth_socket:2"
     end
+  end
+
+  defp generate_token(id, opts \\ []) do
+    salt = Keyword.get(opts, :salt, "salt identifier")
+    Phoenix.Token.sign(SpaceWeb.Endpoint, salt, id)
   end
 end
