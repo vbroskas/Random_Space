@@ -1,4 +1,4 @@
-# Space
+# Spaced Out
 Elixir/Phoenix app that allows clients to join different chat rooms based on a time interval(seconds). At each interval, all users in the room can discuss a different image which gets delivered from the NASA API. App uses a Dynamic Supervisor to start unique GenServer/Agent pairs, and creates different channel topics for each interval. Channels are used to transfer data between client and server, and Phoenix Presence is used to keep track of all clients joining and leaving chat channels. Any clients who join a room with a server process already running are sent the current image stored in the Agent. 
 
 To start your Phoenix server:
