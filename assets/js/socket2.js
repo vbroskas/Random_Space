@@ -115,6 +115,7 @@ if (window.userToken) {
 	}
 
 	function new_url(payload) {
+		var imgItem
 
 		let url = payload.url
 
@@ -127,7 +128,7 @@ if (window.userToken) {
 
 		}
 		else {
-			let imgItem = document.createElement("img")
+			imgItem = document.createElement("img")
 			imgItem.src = payload.url
 			imgItem.classList.add("space-img")
 			imgContainer.innerHTML = ''
