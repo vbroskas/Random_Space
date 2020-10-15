@@ -12,7 +12,7 @@ use Mix.Config
 config :space, SpaceWeb.Endpoint,
   url: [host: "gigalixirapp.com", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
-  check_origin: ["//spacedout.gigalixirapp.com"],
+  check_origin: ["//spacedout.gigalixirapp.com"]
 
 # Do not print debug messages in production
 config :logger, level: :info
