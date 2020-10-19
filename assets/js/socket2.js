@@ -15,15 +15,23 @@ if (window.userToken) {
 	let imgContainer = document.querySelector("#url")
 	let intervalContainer = document.querySelector("#interval")
 	let intervalInput = document.querySelector("#interval-input")
+
+
 	let chatInput = document.querySelector("#chat-input")
-	let messagesContainer = document.querySelector("#messages")
 	let chatEnterBtn = document.querySelector("#enter-chat-btn")
+
+
+	let messagesContainer = document.querySelector("#messages")
+
+
+
 	let countdownContainer = document.querySelector("#countdown")
 	let explanationContainer = document.querySelector('#explanation')
-	const intervalForm = document.getElementById('interval-form');
+	const intervalForm = document.getElementById('interval-form')
+	const chatForm = document.getElementById('chat-form')
 	var modal = document.getElementById("myModal");
-	var modalImg = document.getElementById("modal-img");
-	var span = document.getElementsByClassName("close")[0];
+	var modalImg = document.getElementById("modal-img")
+	var span = document.getElementsByClassName("close")[0]
 	var space
 
 	join_space(window.defaultChannel)
@@ -43,20 +51,26 @@ if (window.userToken) {
 		}
 	})
 
-
-	chatInput.addEventListener("keypress", event => {
-		if (event.key === 'Enter') {
-
-			space.push("new_msg", { body: chatInput.value })
-			chatInput.value = ""
-		}
-	})
-
-	chatEnterBtn.addEventListener("click", event => {
-		space.push("new_msg", { body: chatInput.value })
+	chatForm.addEventListener("submit", event => {
+		let chatMsg = document.getElementById('chat-input').value;
+		space.push("new_msg", { body: chatMsg })
 		chatInput.value = ""
-
 	})
+
+
+	// chatInput.addEventListener("keypress", event => {
+	// 	if (event.key === 'Enter') {
+
+	// 		space.push("new_msg", { body: chatInput.value })
+	// 		chatInput.value = ""
+	// 	}
+	// })
+
+	// chatEnterBtn.addEventListener("click", event => {
+	// 	space.push("new_msg", { body: chatInput.value })
+	// 	chatInput.value = ""
+
+	// })
 
 
 	function join_space(interval) {

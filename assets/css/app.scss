@@ -50,7 +50,12 @@ body {
   }
 
 .header-h1{
-
+	text-shadow: 0 0 20px #753cb9, 0 0 15px #7e72df;
+    color: #cb6aef;
+    font-size: 2rem;
+}
+header {
+	text-align: center;
 }
 
 button, h1 {
@@ -81,7 +86,7 @@ button, h1 {
 	grid-column: 2 / 3;
 	border: 1px solid #aeaeae;
 	display: grid;
-	grid-template-rows: 95% 5%;
+	grid-template-rows: 1fr auto;
 	height: 80vh;
   }
 
@@ -109,15 +114,22 @@ button, h1 {
 }
 #chat-input{
 	flex: 1;
+	background-color: #d0d0d0;
 }
 
 #interval-form{
 	display: flex;
 }
 
-#interval-input{
-	background-color: #b3b3b3;
+#chat-form{
+	display: flex;
 }
+
+#interval-input{
+	background-color: #d0d0d0;
+}
+
+
 
 .highlight{
 	color:#8b82e4;
@@ -129,6 +141,7 @@ button[type="submit"], #enter-chat-btn {
 	font-size: inherit;
 	color: #5a318c;
 	cursor: pointer;
+	padding: 1rem;
   }
   button[type="submit"]:hover, #enter-chat-btn:hover, input[type="submit"]:focus {
 	color: #bf95ea;

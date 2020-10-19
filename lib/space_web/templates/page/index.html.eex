@@ -8,7 +8,7 @@
 
 
 
-<h4>Current Interval: <span id="interval"></span> seconds</h4>
+<h4>Current Room: <span id="interval"></span></h4>
 <h3>New Image In...<span id="countdown"></span></h3>
 
 
@@ -16,16 +16,20 @@
 	<div class="chat-header">
 		<form id="interval-form" onsubmit="event.preventDefault()">
 			<input id="interval-input" type="number" min="10" required placeholder="Enter a number">
-			<button type="submit">Change Interval</button>
+			<button type="submit">Change Room</button>
 		</form>
 	</div>
 	<div id="url" class="left-side "></div>
 	<div class="chat-main">
 		<div id="messages" role="log" aria-live="polite"></div>
-		<div class="input-cont">
+		<form id="chat-form" onsubmit="event.preventDefault()" autocomplete="off">
+			<input id="chat-input" type="text" placeholder="Enter message">
+			<button type="submit">Submit</button>
+		</form>
+		<%# <div id="chat-inputs" class="input-cont">
 			<input class="" id="chat-input" type="text"></input>
 			<button id="enter-chat-btn" class="">submit</button>
-		</div>
+		</div> %>
 	</div>
 	<div id="online-users" class="right-side "></div>
 	<div id="explanation"></div>
