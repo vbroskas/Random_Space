@@ -28,7 +28,7 @@ defmodule Space.ImageSupervisor do
         IO.puts("STARTED Stash FOR INTERVAL::::#{interval}")
 
       {:error, {:already_started, _pid}} ->
-        IO.puts("CHILD ALREADY RUNNING")
+        IO.puts("Stash ALREADY RUNNING")
 
       error ->
         IO.inspect(error.message)
@@ -40,7 +40,7 @@ defmodule Space.ImageSupervisor do
         IO.puts("STARTED SERVER FOR INTERVAL::::#{interval}")
 
       {:error, {:already_started, _pid}} ->
-        IO.puts("CHILD ALREADY RUNNING")
+        IO.puts("server ALREADY RUNNING")
 
       error ->
         IO.inspect(error.message)
